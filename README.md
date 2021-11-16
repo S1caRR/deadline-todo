@@ -1,6 +1,5 @@
 # deadline-todo
-
-# todo_list
+ToDoList app
 Latest BACKEND version into branch main!
 
 
