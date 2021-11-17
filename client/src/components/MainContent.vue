@@ -12,13 +12,16 @@
       <div class="tasks"
            v-for="task in taskList"
            v-bind:key="task">
-        <div class="task-item"><input type="checkbox"> {{task.title}} </div>
+
+        <div class="task-item">
+          <input type="checkbox"> {{task.title}}
+        </div>
+
       </div>
 
       <div  class="content-input-tasks">
         <input type="text" size="100" placeholder="Название таска"
-               v-bind:value="newPostTitle"
-               @input="newPostTitle = $event.target.value">
+               v-model="newTaskTitle">
         <a href="#" v-on:click="addTask">Добавить</a>
       </div>
 
@@ -31,21 +34,23 @@ export default {
 
   data() {
     return{
-      taskList: [
-        {id: Date.now(), title: "task 1"},
-      ],
-      newPostTitle: "",
+      taskList: [],
+      newTaskTitle: "",
     }
   },
 
   methods: {
     addTask() {
-      const newTask = {
-        id: Date.now(),
-        title: this.newPostTitle
+      if (this.newTaskTitle){
+        const newTask = {
+          id: Date.now(),
+          title: this.newTaskTitle
+        }
+        this.taskList.push(newTask)
+        this.newTaskTitle = ""
       }
-      this.taskList.push(newTask)
-    }
+    },
+
 
   }
 
@@ -81,6 +86,4 @@ export default {
 
   }
 }
-
-
 </style>
