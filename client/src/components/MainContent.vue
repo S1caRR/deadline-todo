@@ -3,24 +3,23 @@
 
     <div class="content-header">
       <div class="content-header-block-date">
-        <h2>Сегодня</h2>
+        <h2>Список задач на сегодня</h2>
       </div>
     </div>
 
     <div class="content-tasks-block">
-      <div class="content-tasks">
-        <div class="tasks-item">
-          <label for="checkbox-item"><input id="checkbox-item">123</label>
-        </div>
 
-
-        <input type="checkbox"> task 2
-        <input type="checkbox"> task 3
+      <div class="tasks"
+           v-for="task in taskList"
+           v-bind:key="task">
+        <div class="task-item"><input type="checkbox"> {{task.title}} </div>
       </div>
 
       <div  class="content-input-tasks">
-        <input type="text" size="40">
-        <a href="#">Добавить</a>
+        <input type="text" size="100" placeholder="Название таска"
+               v-bind:value="newPostTitle"
+               @input="newPostTitle = $event.target.value">
+        <a href="#" v-on:click="addTask">Добавить</a>
       </div>
 
     </div>
@@ -29,13 +28,27 @@
 
 <script>
 export default {
-  name: "MainContent",
-  data() {
 
+  data() {
+    return{
+      taskList: [
+        {id: Date.now(), title: "task 1"},
+      ],
+      newPostTitle: "",
+    }
   },
+
   methods: {
+    addTask() {
+      const newTask = {
+        id: Date.now(),
+        title: this.newPostTitle
+      }
+      this.taskList.push(newTask)
+    }
 
   }
+
 }
 </script>
 
@@ -55,20 +68,17 @@ export default {
   text-align: center;
 }
 
-.content-input-tasks{
-  input{
-
-  }
-}
-
 .content-tasks-block{
-  margin: 3em 3em;
+  margin: 0em 3em;
   align-items: center;
   width: 90%;
-  .content-tasks{
-    input{
 
-    }
+  .content-tasks{
+    margin-bottom: 10px;
+    border: 2px solid teal;
+  }
+  .task-item{
+
   }
 }
 
