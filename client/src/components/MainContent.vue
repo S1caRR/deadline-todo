@@ -8,16 +8,7 @@
     </div>
 
     <div class="content-tasks-block">
-
-      <div class="tasks"
-           v-for="task in taskList"
-           v-bind:key="task">
-
-        <div class="task-item">
-          <input type="checkbox"> {{task.title}}
-        </div>
-
-      </div>
+        <task-list :taskList="taskList"/>
 
       <div  class="content-input-tasks">
         <input type="text" size="100" placeholder="Название таска"
@@ -26,11 +17,15 @@
       </div>
 
     </div>
+
   </section>
 </template>
 
 <script>
+ import TaskList from "./Tasks/TaskList";
+
 export default {
+  components:{ TaskList},
 
   data() {
     return{
@@ -50,7 +45,6 @@ export default {
         this.newTaskTitle = ""
       }
     },
-
 
   }
 

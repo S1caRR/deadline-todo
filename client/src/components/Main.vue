@@ -1,10 +1,10 @@
 <template>
   <div>
-    <main-header></main-header>
+    <main-header/>
     <div>
       <div class="main">
-        <main-sidebar></main-sidebar>
-        <main-content></main-content>
+        <main-sidebar/>
+        <main-content/>
       </div>
     </div>
   </div>
