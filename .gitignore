@@ -138,7 +138,7 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-/server/config.py
+/server/deadline_todo/config.py
 
 .DS_Store
 node_modules
@@ -163,3 +163,8 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Config file
+
+dedline_todo/config.py
+
