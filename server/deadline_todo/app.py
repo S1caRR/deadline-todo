@@ -1,6 +1,7 @@
 from middlewares.auth_middleware import auth_middleware
 from routes.auth import auth_router
 from routes.task import task_router
+
 from aiohttp import web
 
 

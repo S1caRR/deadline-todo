@@ -1,7 +1,9 @@
 from .db_init import engine, async_session
+from .exceptions import EmailAlreadyExist, UserNotFound
 from deadline_todo.models.user import User
 
 from sqlalchemy import select, insert, or_
+from sqlalchemy.exc import IntegrityError
 
 
 async def fetch_user(email=None, user_id=None):
@@ -22,7 +24,10 @@ async def fetch_user(email=None, user_id=None):
 
     user = user.scalars().first()
 
-    return user
+    if user:
+        return user
+    else:
+        raise UserNotFound(user_id=user_id, email=email)
 
 
 async def add_new_user(username, email, hashed_password):
@@ -35,9 +40,12 @@ async def add_new_user(username, email, hashed_password):
                 password=hashed_password
             )
         )
+
         try:
             await session.execute(stmt)
-        except Exception:
-            raise Exception
-        await session.commit()
-    await engine.dispose()
+            await session.commit()
+        except IntegrityError as e:
+            await session.close()
+            raise EmailAlreadyExist(email) from e
+        finally:
+            await engine.dispose()

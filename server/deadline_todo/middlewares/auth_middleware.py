@@ -14,7 +14,7 @@ async def auth_middleware(app, handler):
                 payload = jwt.decode(jwt_token, config.JWT_SECRET,
                                      algorithms=[config.JWT_ALGORITHM])
             except (jwt.DecodeError, jwt.ExpiredSignatureError):
-                return web.json_response({'message': 'Token is invalid'}, status=400)
+                return web.json_response({'message': 'Token is invalid'}, status=403)
 
             request.user = await fetch_user(user_id=payload['user_id'])
         return await handler(request)
