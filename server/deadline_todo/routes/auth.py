@@ -60,7 +60,7 @@ async def login(request: web.Request):
 
     except UserNotFound as ex:
         return web.json_response({'message': str(ex)},
-                                 status=401)
+                                 status=404)
 
     except JSONDecodeError:
         return web.json_response({'message': 'Wrong input data'},
