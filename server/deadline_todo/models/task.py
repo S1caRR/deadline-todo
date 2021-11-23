@@ -3,22 +3,9 @@ from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import Boolean
 
-
-Base = declarative_base()
-
-
-class User(Base):
-    __tablename__ = "user"
-
-    id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False)
-
-    def __repr__(self):
-        return f'User(id={self.id}, username={self.username}, password={self.password}, email={self.email})'
+from deadline_todo.db.db_init import Base
 
 
 class Task(Base):
@@ -28,6 +15,7 @@ class Task(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
     deadline = Column(DateTime, nullable=False)
+    # is_finished = Column(Boolean, nullable=False, default=False)
     user_id = Column(ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
