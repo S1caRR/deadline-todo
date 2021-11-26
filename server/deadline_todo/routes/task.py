@@ -9,8 +9,8 @@ from json import JSONDecodeError
 task_router = web.RouteTableDef()
 
 
-@jwt_required
 @task_router.get('/api/tasks')
+@jwt_required
 async def api_tasks(request: web.Request) -> web.Response:
     user_id = request.user.id
 
@@ -23,14 +23,25 @@ async def api_tasks(request: web.Request) -> web.Response:
         status=200)
 
 
-@jwt_required
 @task_router.get(r'/api/tasks/{task_id:\d+}')
-async def api_get_task(request: web.Request) -> web.Response:
-    pass
-
-
 @jwt_required
+async def api_get_task(request: web.Request) -> web.Response:
+    try:
+        user_id = request.user.id
+        task_id = int(request.match_info.get('task_id'))
+
+        task = await fetch_task(user_id, task_id)
+
+        return web.json_response(task,
+                                 status=200)
+
+    except TaskNotFound as ex:
+        return web.json_response({'message': str(ex)},
+                                 status=404)
+
+
 @task_router.post('/api/tasks')
+@jwt_required
 async def api_new_task(request: web.Request) -> web.Response:
     try:
         task = await request.json()
@@ -50,8 +61,8 @@ async def api_new_task(request: web.Request) -> web.Response:
                                  status=400)
 
 
-@jwt_required
 @task_router.delete(r'/api/tasks/{task_id:\d+}')
+@jwt_required
 async def api_delete_task(request: web.Request) -> web.Response:
     try:
         user_id = request.user.id
@@ -59,7 +70,7 @@ async def api_delete_task(request: web.Request) -> web.Response:
 
         await delete_task(user_id, task_id)
 
-        return web.json_response({"status": "success", },
+        return web.json_response({"message": "Task successfully deleted!", },
                                  status=200)
 
     except TaskNotFound as ex:
@@ -71,8 +82,8 @@ async def api_delete_task(request: web.Request) -> web.Response:
                                  status=400)
 
 
-@jwt_required
 @task_router.patch(r'/api/tasks/{task_id:\d+}')
+@jwt_required
 async def api_update_task(request: web.Request) -> web.Response:
     try:
         user_id = request.user.id

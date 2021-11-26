@@ -40,6 +40,8 @@ async def fetch_task(user_id, task_id) -> dict:
     await engine.dispose()
 
     task = result.scalars().first()
+    if not task:
+        raise TaskNotFound(task_id)
     task = task.to_dict()
 
     return task
