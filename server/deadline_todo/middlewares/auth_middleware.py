@@ -32,6 +32,6 @@ def jwt_required(func):
     async def wrapper(request):
         if not request.user:
             return web.json_response({'message': 'Auth required'}, status=401)
-        return func(request)
+        return await func(request)
 
     return wrapper
