@@ -8,7 +8,8 @@ from sqlalchemy import select, insert, update, delete
 
 async def fetch_tasks_list(user_id) -> list:
     """
-    Fetch all user's task from DB by user_id
+    Fetch all user's task from DB
+
     :param user_id: user's id
     :return: list of tasks in dictionary format
     """
@@ -30,6 +31,13 @@ async def fetch_tasks_list(user_id) -> list:
 
 
 async def fetch_task(user_id, task_id) -> dict:
+    """
+    Fetch one user's task from DB
+
+    :param user_id: user's id
+    :param task_id: task id
+    :return: dict with task information
+    """
     async with async_session() as session:
         stmt = (
             select(Task).
@@ -47,7 +55,15 @@ async def fetch_task(user_id, task_id) -> dict:
     return task
 
 
-async def add_new_task(user_id, task_name=None, desc=None, deadline=None):
+async def add_new_task(user_id: int, task_name=None, desc=None, deadline=None):
+    """
+    Create task in DB
+
+    :param user_id: user's id
+    :param task_name: task name
+    :param desc: task description
+    :param deadline: task deadline
+    """
     async with async_session() as session:
         stmt = (
             insert(Task).
@@ -65,6 +81,13 @@ async def add_new_task(user_id, task_name=None, desc=None, deadline=None):
 
 
 async def delete_task(user_id: int, task_id: int):
+    """
+    Delete task from DB
+
+    :param user_id: user's id
+    :param task_id: task's id
+    :raise TaskNotFound
+    """
     async with async_session() as session:
         stmt = (
             delete(Task).
@@ -85,6 +108,18 @@ async def update_task(user_id, task_id,
                       desc=None,
                       deadline=None,
                       is_finished=False):
+    """
+    Update task in DB
+
+    :param user_id:
+    :param task_id:
+    :param task_name:
+    :param desc:
+    :param deadline:
+    :param is_finished:
+    :raise TaskNotFound
+    :return:
+    """
     async with async_session() as session:
         stmt = (
             update(Task).

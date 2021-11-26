@@ -14,6 +14,11 @@ auth_router = web.RouteTableDef()
 
 @auth_router.post('/api/register')
 async def register(request: web.Request):
+    """
+    Register user method
+
+    :param request:
+    """
     try:
         data = await request.json()
 
@@ -35,8 +40,14 @@ async def register(request: web.Request):
                                  status=400)
 
 
-@auth_router.post("/api/login")
+@auth_router.post('/api/login')
 async def login(request: web.Request):
+    """
+    Login user by email and password
+
+    :param request:
+    :return: json object with field 'token' witch contains JWT Authorization token
+    """
     try:
         data = await request.json()
 

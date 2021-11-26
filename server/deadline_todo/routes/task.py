@@ -12,12 +12,17 @@ task_router = web.RouteTableDef()
 @task_router.get('/api/tasks')
 @jwt_required
 async def api_tasks(request: web.Request) -> web.Response:
+    """
+    Method gets all user's tasks
+
+    :param request:
+    :return: json object with field 'data' witch contains list[dict[str, any]] of tasks
+    """
     user_id = request.user.id
 
     tasks = await fetch_tasks_list(user_id)
 
     return web.json_response({
-        'message': 'success',
         'data': tasks
     },
         status=200)
@@ -26,13 +31,19 @@ async def api_tasks(request: web.Request) -> web.Response:
 @task_router.get(r'/api/tasks/{task_id:\d+}')
 @jwt_required
 async def api_get_task(request: web.Request) -> web.Response:
+    """
+    Method gets task by id
+
+    :param request:
+    :return: json object with field 'data' witch contains task format dict[str, any]
+    """
     try:
         user_id = request.user.id
         task_id = int(request.match_info.get('task_id'))
 
         task = await fetch_task(user_id, task_id)
 
-        return web.json_response(task,
+        return web.json_response({'data': task},
                                  status=200)
 
     except TaskNotFound as ex:
@@ -43,6 +54,11 @@ async def api_get_task(request: web.Request) -> web.Response:
 @task_router.post('/api/tasks')
 @jwt_required
 async def api_new_task(request: web.Request) -> web.Response:
+    """
+    Method creates task
+
+    :param request:
+    """
     try:
         task = await request.json()
 
@@ -53,7 +69,7 @@ async def api_new_task(request: web.Request) -> web.Response:
 
         await add_new_task(user_id, task_name=task_name, desc=task_desc, deadline=deadline)
 
-        return web.json_response({"message": "Task was successfully added!"},
+        return web.json_response({'message': 'Task was successfully created!'},
                                  status=201)
 
     except JSONDecodeError:
@@ -64,13 +80,18 @@ async def api_new_task(request: web.Request) -> web.Response:
 @task_router.delete(r'/api/tasks/{task_id:\d+}')
 @jwt_required
 async def api_delete_task(request: web.Request) -> web.Response:
+    """
+    Method deletes task by id
+
+    :param request:
+    """
     try:
         user_id = request.user.id
-        task_id = int(request.match_info["task_id"])
+        task_id = int(request.match_info.get('task_id'))
 
         await delete_task(user_id, task_id)
 
-        return web.json_response({"message": "Task successfully deleted!", },
+        return web.json_response({'id': task_id},
                                  status=200)
 
     except TaskNotFound as ex:
@@ -85,6 +106,11 @@ async def api_delete_task(request: web.Request) -> web.Response:
 @task_router.patch(r'/api/tasks/{task_id:\d+}')
 @jwt_required
 async def api_update_task(request: web.Request) -> web.Response:
+    """
+    Method updates task by id
+
+    :param request:
+    """
     try:
         user_id = request.user.id
         task_id = int(request.match_info.get('task_id'))
@@ -101,7 +127,7 @@ async def api_update_task(request: web.Request) -> web.Response:
                           desc=new_desc,
                           deadline=new_deadline,
                           is_finished=is_finished)
-        return web.json_response({'message': 'Task successfully updated!'},
+        return web.json_response({'id': task_id},
                                  status=200)
 
     except TaskNotFound as ex:

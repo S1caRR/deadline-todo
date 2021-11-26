@@ -11,6 +11,7 @@ async def fetch_user(email=None, user_id=None):
     Fetch SQLAlchemy models.User object from database by the email or user id
     :param email: user's email
     :param user_id: user's id
+    :raise UserNotFound
     :return: SQLAlchemy models.User object
     """
     async with async_session() as session:
@@ -31,6 +32,13 @@ async def fetch_user(email=None, user_id=None):
 
 
 async def add_new_user(username, email, hashed_password):
+    """
+    Creates a new user in DB
+    :param username: username
+    :param email: email
+    :param hashed_password: password
+    :raise EmailAlreadyExist
+    """
     async with async_session() as session:
         stmt = (
             insert(User).
