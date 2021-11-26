@@ -12,23 +12,23 @@ import jwt
 auth_router = web.RouteTableDef()
 
 
-@auth_router.post("/api/register")
+@auth_router.post('/api/register')
 async def register(request: web.Request):
     try:
         register_info = await request.json()
 
-        username = register_info["username"]
-        email = register_info["email"]
-        password = bcrypt.hashpw(register_info["password"].encode(), bcrypt.gensalt()).decode()
+        username = register_info['username']
+        email = register_info['email']
+        password = bcrypt.hashpw(register_info['password'].encode(), bcrypt.gensalt()).decode()
 
         await add_new_user(username, email, password)
 
         return web.json_response({'message': 'User successfully registered!'},
-                                 status=200)
+                                 status=201)
 
     except EmailAlreadyExist as ex:
         return web.json_response({'message': str(ex)},
-                                 status=401)
+                                 status=400)
 
     except JSONDecodeError:
         return web.json_response({'message': 'Wrong input data'},

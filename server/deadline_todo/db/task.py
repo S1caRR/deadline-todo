@@ -1,4 +1,5 @@
 from .db_init import engine, async_session
+from .exceptions import TaskNotFound
 from deadline_todo.models.task import Task
 
 from datetime import datetime
@@ -23,12 +24,7 @@ async def fetch_tasks_list(user_id):
     tasks = query_result.scalars().all()
     tasks_list = []
     for task in tasks:
-        tasks_list.append({
-            'task_id': task.id,
-            'task_name': task.name,
-            'task_desc': task.description,
-            'deadline': task.deadline.isoformat()
-        })
+        tasks_list.append(task.to_dict())
 
     return tasks_list
 
@@ -61,23 +57,35 @@ async def delete_task(user_id: int, task_id: int):
         await session.commit()
     await engine.dispose()
 
+    deleted_task = deleted_task.scalars().first()
     if not deleted_task:
-        raise Exception
+        raise TaskNotFound(task_id)
 
 
-async def update_task(user_id, task_id, new_task_name=None, new_desc=None, new_deadline=None):
+async def update_task(user_id, task_id,
+                      task_name=None,
+                      desc=None,
+                      deadline=None,
+                      is_finished=False):
     async with async_session() as session:
         stmt = (
             update(Task).
             where(Task.user_id == user_id, Task.id == task_id).
             values(
-                name=new_task_name,
-                description=new_desc,
-                deadline=datetime.fromisoformat(new_deadline)
+                name=task_name,
+                description=desc,
+                deadline=datetime.fromisoformat(deadline),
+                is_finished=is_finished
             ).
             returning(Task)
         )
-        await session.execute(stmt)
-
+        updated_task = await session.execute(stmt)
         await session.commit()
     await engine.dispose()
+
+    updated_task = updated_task.scalars().first()
+    if not updated_task:
+        raise TaskNotFound(task_id)
+
+
+
