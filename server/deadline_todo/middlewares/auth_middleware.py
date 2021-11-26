@@ -28,7 +28,7 @@ async def auth_middleware(app, handler):
     return middleware
 
 
-def login_required(func):
+def jwt_required(func):
     async def wrapper(request):
         if not request.user:
             return web.json_response({'message': 'Auth required'}, status=401)

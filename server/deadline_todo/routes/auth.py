@@ -15,11 +15,11 @@ auth_router = web.RouteTableDef()
 @auth_router.post('/api/register')
 async def register(request: web.Request):
     try:
-        register_info = await request.json()
+        data = await request.json()
 
-        username = register_info['username']
-        email = register_info['email']
-        password = bcrypt.hashpw(register_info['password'].encode(), bcrypt.gensalt()).decode()
+        username = data.get('username')
+        email = data.get('email')
+        password = bcrypt.hashpw(data.get('password').encode(), bcrypt.gensalt()).decode()
 
         await add_new_user(username, email, password)
 
@@ -38,14 +38,16 @@ async def register(request: web.Request):
 @auth_router.post("/api/login")
 async def login(request: web.Request):
     try:
-        login_info = await request.json()
+        data = await request.json()
 
-        user = await fetch_user(email=login_info["email"])
+        email = data.get('email')
+        password = data.get('password')
 
-        if not bcrypt.checkpw(login_info['password'].encode(), user.password.encode()):
+        user = await fetch_user(email=email)
+
+        if user and password and not bcrypt.checkpw(password.encode(), user.password.encode()):
             return web.json_response({'message': 'Wrong credentials'},
                                      status=401)
-
         payload = {
             'user_id': user.id,
             'exp': datetime.utcnow() + timedelta(seconds=config.JWT_EXP_DELTA_SECONDS)

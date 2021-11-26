@@ -6,7 +6,7 @@ from datetime import datetime
 from sqlalchemy import select, insert, update, delete
 
 
-async def fetch_tasks_list(user_id):
+async def fetch_tasks_list(user_id) -> list:
     """
     Fetch all user's task from DB by user_id
     :param user_id: user's id
@@ -17,16 +17,32 @@ async def fetch_tasks_list(user_id):
             select(Task).
             where(Task.user_id == user_id)
         )
-        query_result = await session.execute(stmt)
+        result = await session.execute(stmt)
         await session.commit()
     await engine.dispose()
 
-    tasks = query_result.scalars().all()
+    tasks = result.scalars().all()
     tasks_list = []
     for task in tasks:
         tasks_list.append(task.to_dict())
 
     return tasks_list
+
+
+async def fetch_task(user_id, task_id) -> dict:
+    async with async_session() as session:
+        stmt = (
+            select(Task).
+            where(Task.id == task_id, Task.user_id == user_id)
+        )
+        result = await session.execute(stmt)
+        await session.commit()
+    await engine.dispose()
+
+    task = result.scalars().first()
+    task = task.to_dict()
+
+    return task
 
 
 async def add_new_task(user_id, task_name=None, desc=None, deadline=None):
@@ -53,11 +69,11 @@ async def delete_task(user_id: int, task_id: int):
             where(Task.id == task_id, Task.user_id == user_id).
             returning(Task)
         )
-        deleted_task = await session.execute(stmt)
+        result = await session.execute(stmt)
         await session.commit()
     await engine.dispose()
 
-    deleted_task = deleted_task.scalars().first()
+    deleted_task = result.scalars().first()
     if not deleted_task:
         raise TaskNotFound(task_id)
 
@@ -79,11 +95,11 @@ async def update_task(user_id, task_id,
             ).
             returning(Task)
         )
-        updated_task = await session.execute(stmt)
+        result = await session.execute(stmt)
         await session.commit()
     await engine.dispose()
 
-    updated_task = updated_task.scalars().first()
+    updated_task = result.scalars().first()
     if not updated_task:
         raise TaskNotFound(task_id)
 
