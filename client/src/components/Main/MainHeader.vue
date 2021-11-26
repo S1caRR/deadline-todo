@@ -3,7 +3,7 @@
     <div class="header">
       <div class="top-nav">
         <div class="logo">
-          <a href="#"><img src="../img/logo.png" alt="logo"></a>
+          <a href="#"><img src="../../img/logo.png" alt="logo"></a>
         </div>
 
         <div class="menu">

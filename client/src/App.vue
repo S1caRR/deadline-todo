@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import MainContainer from "./components/Main";
+import MainContainer from "./components/Main/Main";
 
 export default {
   components: {MainContainer},

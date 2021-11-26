@@ -7,46 +7,41 @@
       </div>
     </div>
 
-    <div class="content-tasks-block">
-        <task-list :taskList="taskList"/>
-
-      <div  class="content-input-tasks">
-        <input type="text" size="100" placeholder="Название таска"
-               v-model="newTaskTitle">
-        <a href="#" v-on:click="addTask">Добавить</a>
-      </div>
-
+    <div v-for="day of cObj.date" :key="day.id" >
+      <tasks-day :date="day"/>
     </div>
+
 
   </section>
 </template>
 
 <script>
- import TaskList from "./Tasks/TaskList";
+ //import TaskList from "../Tasks/TaskList";
+ import TasksDay from "../Tasks/TasklistDay";
+ import {genCalendarObj} from "calendar-generator";
 
 export default {
-  components:{ TaskList},
+  components:{TasksDay},
 
   data() {
     return{
-      taskList: [],
-      newTaskTitle: "",
+
+      cObj: {},
     }
   },
 
-  methods: {
-    addTask() {
-      if (this.newTaskTitle){
-        const newTask = {
-          id: Date.now(),
-          title: this.newTaskTitle
-        }
-        this.taskList.push(newTask)
-        this.newTaskTitle = ""
-      }
-    },
+  methods:{
+    genCalendarObject(){
+      let dateNow = new Date()
+      const fromDate = `${dateNow.getFullYear()}-${dateNow.getMonth()}-${dateNow.getDate()}` // format: 'YYYY-MM-DD
+      const toDate = `${dateNow.getFullYear()}-${dateNow.getMonth()+2}-${dateNow.getDate()}`
+      this.cObj = genCalendarObj(fromDate, toDate)
+    }
+  },
 
-  }
+  beforeMount() {
+    this.genCalendarObject()
+  },
 
 }
 </script>
