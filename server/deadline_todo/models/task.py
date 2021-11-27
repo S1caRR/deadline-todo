@@ -5,7 +5,7 @@ from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Boolean
 
-from deadline_todo.db.db_init import Base
+from deadline_todo.db.db_config import Base
 
 
 class Task(Base):

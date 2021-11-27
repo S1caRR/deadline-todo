@@ -26,6 +26,8 @@ async def make_db():
     WARNING!!!
     It replaces all tables and deletes all data!
     """
+    from deadline_todo.models.task import Task
+    from deadline_todo.models.user import User
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
