@@ -4,6 +4,7 @@
          v-for="task in taskList"
          v-bind:key="task.id">
         <task-item :taskTitle="task.title" />
+
 <!--        <a href="#" @click="deleteTask(task)">Удалить</a>-->
     </div>
   </div>

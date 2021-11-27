@@ -9,13 +9,20 @@
 <!--    TaskList-->
 
     <div class="content-tasks-block">
-        <task-list :taskList="taskList"/>
+      <task-list :taskList="taskList"/>
 
-      <div  class="content-input-tasks">
-        <input type="text" size="100" placeholder="Название таска"
-               v-model="newTaskTitle">
-        <a href="#" v-on:click="addTask">Добавить</a>
-      </div>
+      <dialog-window :isShow="dialogVisible" @showDialog="showDialog">
+        <div class="content-input-tasks" >
+
+          <input type="text" size="50" placeholder="Название таска"
+                 v-model="newTaskTitle">
+          <input type="text" size="100" placeholder="Описание таска"
+                 v-model="newTaskData">
+          <a href="#" v-on:click="addTask">Добавить</a>
+
+        </div>
+      </dialog-window>
+      <a href="#" @click="showDialog">Создать</a>
 
     </div>
 
@@ -24,14 +31,17 @@
 
 <script>
 import TaskList from "./TaskList";
+import DialogWindow from "../UI/DialogWindow";
 
 export default {
   name: "TasksDay",
-  components:{TaskList},
+  components:{TaskList, DialogWindow},
   data() {
     return{
       taskList: [],
       newTaskTitle: "",
+      newTaskData:"",
+      dialogVisible: false
     }
   },
 
@@ -40,11 +50,18 @@ export default {
       if (this.newTaskTitle) {
         const newTask = {
           id: Date.now(),
-          title: this.newTaskTitle
+          title: this.newTaskTitle,
+          data: this.newTaskData
         }
         this.taskList.push(newTask)
         this.newTaskTitle = ""
+        this.newTaskData = ""
+        this.dialogVisible = false
       }
+    },
+
+    showDialog(){
+      this.dialogVisible = !this.dialogVisible
     }
   },
 
