@@ -1,4 +1,4 @@
-from deadline_todo.db.auth import *
+from deadline_todo.db.auth import AuthDatabaseService
 import deadline_todo.config as config
 from deadline_todo.db.exceptions import EmailAlreadyExist, UserNotFound
 
@@ -10,6 +10,7 @@ import jwt
 
 
 auth_router = web.RouteTableDef()
+auth_db_service = AuthDatabaseService()
 
 
 @auth_router.post('/api/register')
@@ -26,7 +27,7 @@ async def register(request: web.Request):
         email = data.get('email')
         password = bcrypt.hashpw(data.get('password').encode(), bcrypt.gensalt()).decode()
 
-        await add_new_user(username, email, password)
+        await auth_db_service.add_new_user(username, email, password)
 
         return web.json_response({'message': 'User successfully registered!'},
                                  status=201)
@@ -54,7 +55,7 @@ async def login(request: web.Request):
         email = data.get('email')
         password = data.get('password')
 
-        user = await fetch_user(email=email)
+        user = await auth_db_service.fetch_user(email=email)
 
         if user and password and not bcrypt.checkpw(password.encode(), user.password.encode()):
             return web.json_response({'message': 'Wrong credentials'},
