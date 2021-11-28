@@ -8,8 +8,9 @@
 
 <!--    TaskList-->
 
-    <div class="content-tasks-block">
-      <task-list :taskList="taskList"/>
+    <div class="content-tasks-block" >
+      <task-list :taskList="taskList" v-if="!isPostLoading"/>
+      <div v-else>Loading......</div>
 
       <dialog-window :isShow="dialogVisible" @showDialog="showDialog">
         <div class="content-input-tasks" >
@@ -26,12 +27,15 @@
 
     </div>
 
+
+
   </div>
 </template>
 
 <script>
 import TaskList from "./TaskList";
 import DialogWindow from "../UI/DialogWindow";
+import axios from 'axios';
 
 export default {
   name: "TasksDay",
@@ -41,11 +45,29 @@ export default {
       taskList: [],
       newTaskTitle: "",
       newTaskData:"",
-      dialogVisible: false
+      dialogVisible: false,
+      isPostLoading: false,
+
     }
   },
 
   methods: {
+    async fetchTasks(){
+      this.isPostLoading = true
+      try {
+        setTimeout(async () => {
+          const response = await axios.get('')
+          this.taskList = response
+        }, 500)
+
+      } catch (e) {
+        alert('error')
+      }
+      finally {
+        this.isPostLoading = false
+      }
+    },
+
     addTask() {
       if (this.newTaskTitle) {
         const newTask = {
@@ -62,7 +84,9 @@ export default {
 
     showDialog(){
       this.dialogVisible = !this.dialogVisible
-    }
+    },
+
+
   },
 
   props:{

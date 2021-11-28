@@ -39,7 +39,7 @@ export default {
     }
   },
 
-  beforeMount() {
+  mounted() {
     this.genCalendarObject()
   },
 
