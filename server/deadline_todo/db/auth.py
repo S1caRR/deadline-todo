@@ -31,7 +31,7 @@ class AuthDatabaseService:
         user = user.scalars().first()
 
         if user:
-            return user
+            return user.to_dict()
         else:
             raise UserNotFound(user_id=user_id, email=email)
 

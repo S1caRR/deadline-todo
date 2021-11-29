@@ -19,7 +19,7 @@ async def api_tasks(request: web.Request) -> web.Response:
     :param request:
     :return: json object with field 'data' witch contains list[dict[str, any]] of tasks
     """
-    user_id = request.user.id
+    user_id = request.user.get('user_id')
 
     tasks = await task_db_service.fetch_tasks_list(user_id)
 
@@ -39,7 +39,7 @@ async def api_get_task(request: web.Request) -> web.Response:
     :return: json object with field 'data' witch contains task format dict[str, any]
     """
     try:
-        user_id = request.user.id
+        user_id = request.user.get('user_id')
         task_id = int(request.match_info.get('task_id'))
 
         task = await task_db_service.fetch_task(user_id, task_id)
@@ -48,8 +48,7 @@ async def api_get_task(request: web.Request) -> web.Response:
                                  status=200)
 
     except TaskNotFound as ex:
-        return web.json_response({'message': str(ex)},
-                                 status=404)
+        raise web.HTTPBadRequest(text=str(ex))
 
 
 @task_router.post('/api/tasks')
@@ -63,7 +62,7 @@ async def api_new_task(request: web.Request) -> web.Response:
     try:
         task = await request.json()
 
-        user_id = request.user.id
+        user_id = request.user.get('user_id')
         task_name = task.get('task_name')
         task_desc = task.get('task_description')
         deadline = task.get('deadline')
@@ -74,8 +73,7 @@ async def api_new_task(request: web.Request) -> web.Response:
                                  status=201)
 
     except JSONDecodeError:
-        return web.json_response({'message': 'Wrong input data'},
-                                 status=400)
+        raise web.HTTPBadRequest(text='Wrong input data')
 
 
 @task_router.delete(r'/api/tasks/{task_id:\d+}')
@@ -87,7 +85,7 @@ async def api_delete_task(request: web.Request) -> web.Response:
     :param request:
     """
     try:
-        user_id = request.user.id
+        user_id = request.user.get('user_id')
         task_id = int(request.match_info.get('task_id'))
 
         await task_db_service.delete_task(user_id, task_id)
@@ -96,12 +94,10 @@ async def api_delete_task(request: web.Request) -> web.Response:
                                  status=200)
 
     except TaskNotFound as ex:
-        return web.json_response({'message': str(ex)},
-                                 status=404)
+        raise web.HTTPBadRequest(text=str(ex))
 
     except JSONDecodeError:
-        return web.json_response({'message': 'Wrong input data'},
-                                 status=400)
+        raise web.HTTPBadRequest(text='Wrong input data')
 
 
 @task_router.patch(r'/api/tasks/{task_id:\d+}')
@@ -113,7 +109,7 @@ async def api_update_task(request: web.Request) -> web.Response:
     :param request:
     """
     try:
-        user_id = request.user.id
+        user_id = request.user.get('user_id')
         task_id = int(request.match_info.get('task_id'))
 
         data = await request.json()
@@ -132,9 +128,7 @@ async def api_update_task(request: web.Request) -> web.Response:
                                  status=200)
 
     except TaskNotFound as ex:
-        return web.json_response({'message': str(ex)},
-                                 status=404)
+        raise web.HTTPBadRequest(text=str(ex))
 
     except JSONDecodeError:
-        return web.json_response({'message': 'Wrong input data'},
-                                 status=400)
+        raise web.HTTPBadRequest(text='Wrong input data')

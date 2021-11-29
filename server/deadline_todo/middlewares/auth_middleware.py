@@ -20,12 +20,10 @@ async def auth_middleware(app, handler):
                 request.user = await auth_db_service.fetch_user(user_id=payload['user_id'])
 
             except (jwt.DecodeError, jwt.ExpiredSignatureError):
-                return web.json_response({'message': 'Token is invalid'},
-                                         status=403)
+                raise web.HTTPUnauthorized(text='Token is invalid')
 
             except UserNotFound as ex:
-                return web.json_response({'message': str(ex)},
-                                         status=404)
+                raise web.HTTPUnauthorized(text=str(ex))
 
         return await handler(request)
     return middleware
@@ -34,6 +32,6 @@ async def auth_middleware(app, handler):
 def jwt_required(func):
     async def wrapper(request):
         if not request.user:
-            return web.json_response({'message': 'Auth required'}, status=401)
+            raise web.HTTPUnauthorized(text='Authorization required!')
         return await func(request)
     return wrapper

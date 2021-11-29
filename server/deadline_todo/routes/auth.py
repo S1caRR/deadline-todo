@@ -33,12 +33,10 @@ async def register(request: web.Request):
                                  status=201)
 
     except EmailAlreadyExist as ex:
-        return web.json_response({'message': str(ex)},
-                                 status=400)
+        raise web.HTTPBadRequest(text=str(ex))
 
     except JSONDecodeError:
-        return web.json_response({'message': 'Wrong input data'},
-                                 status=400)
+        raise web.HTTPBadRequest(text='Wrong input data')
 
 
 @auth_router.post('/api/login')
@@ -57,11 +55,10 @@ async def login(request: web.Request):
 
         user = await auth_db_service.fetch_user(email=email)
 
-        if user and password and not bcrypt.checkpw(password.encode(), user.password.encode()):
-            return web.json_response({'message': 'Wrong credentials'},
-                                     status=401)
+        if user and password and not bcrypt.checkpw(password.encode(), user.get('password').encode()):
+            return web.HTTPUnauthorized(text='Wrong credentials')
         payload = {
-            'user_id': user.id,
+            'user_id': user.get('id'),
             'exp': datetime.utcnow() + timedelta(seconds=config.JWT_EXP_DELTA_SECONDS)
         }
         jwt_token = jwt.encode(payload, config.JWT_SECRET, algorithm=config.JWT_ALGORITHM)
@@ -73,9 +70,7 @@ async def login(request: web.Request):
             status=200)
 
     except UserNotFound as ex:
-        return web.json_response({'message': str(ex)},
-                                 status=404)
+        raise web.HTTPBadRequest(text=str(ex))
 
     except JSONDecodeError:
-        return web.json_response({'message': 'Wrong input data'},
-                                 status=400)
+        raise web.HTTPBadRequest(text='Wrong input data')
