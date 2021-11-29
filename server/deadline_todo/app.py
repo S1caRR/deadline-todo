@@ -19,4 +19,4 @@ async def init_app() -> web.Application:
     return app
 
 
-web.run_app(init_app())
+web.run_app(init_app(), host='127.0.0.1', port=8081)
