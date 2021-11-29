@@ -45,7 +45,7 @@ async def login(request: web.Request):
     Login user by email and password
 
     :param request:
-    :return: json object with field 'token' witch contains JWT Authorization token
+    :return: json object with field 'token' which contains JWT Authorization token
     """
     try:
         data = await request.json()
@@ -58,7 +58,7 @@ async def login(request: web.Request):
         if user and password and not bcrypt.checkpw(password.encode(), user.get('password').encode()):
             return web.HTTPUnauthorized(text='Wrong credentials')
         payload = {
-            'user_id': user.get('id'),
+            'user_id': user.get('user_id'),
             'exp': datetime.utcnow() + timedelta(seconds=config.JWT_EXP_DELTA_SECONDS)
         }
         jwt_token = jwt.encode(payload, config.JWT_SECRET, algorithm=config.JWT_ALGORITHM)
