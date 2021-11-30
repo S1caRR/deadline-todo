@@ -15,9 +15,21 @@ import MainHeader from "./MainHeader";
 import MainSidebar from "./MainSidebar";
 import MainContent from "./MainContent";
 
+
 export default {
   components: {MainHeader, MainContent, MainSidebar},
   name: "MainContainer",
+
+  data(){
+    return{
+
+    }
+  },
+
+  methods:{
+
+  }
+
 }
 </script>
 
