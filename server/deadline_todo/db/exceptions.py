@@ -2,6 +2,13 @@ class DBException(Exception):
     pass
 
 
+class LoginAlreadyExists(DBException):
+    def __init__(self, email):
+        super().__init__(
+            f'User with login \'{email}\' already exists'
+        )
+
+
 class UserNotFound(DBException):
     def __init__(self, login=None, user_id=None):
         if user_id:
@@ -10,15 +17,8 @@ class UserNotFound(DBException):
             )
         elif login:
             super().__init__(
-                f'User with email \'{login}\' not found'
+                f'User with login \'{login}\' not found'
             )
-
-
-class LoginAlreadyExists(DBException):
-    def __init__(self, email):
-        super().__init__(
-            f'User with email \'{email}\' already registered'
-        )
 
 
 class TaskNotFound(DBException):

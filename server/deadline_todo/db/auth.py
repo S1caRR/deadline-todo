@@ -35,10 +35,10 @@ class AuthDatabaseService:
         """
         async with self.async_session() as session:
             try:
-                task_data = user_credentials.dict()
-                task = User(**task_data)
-                session.add(task)
+                user_credentials = user_credentials.dict()
+                user = User(**user_credentials)
+                session.add(user)
                 await session.commit()
             except IntegrityError as ex:
                 await session.close()
-                raise LoginAlreadyExists(task.email) from ex
+                raise LoginAlreadyExists(user.login) from ex

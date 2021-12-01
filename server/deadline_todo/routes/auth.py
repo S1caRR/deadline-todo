@@ -6,6 +6,7 @@ from deadline_todo.models.user import UserModel
 from aiohttp import web
 from datetime import datetime, timedelta
 from json import JSONDecodeError
+from pydantic.error_wrappers import ValidationError
 import bcrypt
 import jwt
 
@@ -33,8 +34,8 @@ async def register(request: web.Request):
     except LoginAlreadyExists as ex:
         raise web.HTTPBadRequest(text=str(ex))
 
-    except JSONDecodeError:
-        raise web.HTTPBadRequest(text='Wrong input data')
+    except (JSONDecodeError, ValidationError):
+        raise web.HTTPBadRequest(text='Wrong data format')
 
 
 @auth_router.post('/api/login')
