@@ -1,9 +1,9 @@
 from .db_config import engine, async_session
-from .exceptions import EmailAlreadyExist, UserNotFound
-from deadline_todo.models.user import User
+from .exceptions import LoginAlreadyExists, UserNotFound
+from deadline_todo.models.user import User, UserModel
 
-from sqlalchemy import select, insert, or_
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import select, or_
+from sqlalchemy.exc import IntegrityError, NoResultFound
 
 
 class AuthDatabaseService:
@@ -11,53 +11,34 @@ class AuthDatabaseService:
         self.engine = engine
         self.async_session = async_session
 
-    async def fetch_user(self, email=None, user_id=None):
+    async def fetch_user(self, user_id=None, login=None) -> UserModel:
         """
-        Fetch SQLAlchemy models.User object from database by the email or user id
-        :param email: user's email
-        :param user_id: user's id
-        :raise UserNotFound
-        :return: SQLAlchemy models.User object
+        Fetch user from DB
         """
         async with self.async_session() as session:
-            stmt = (
+            user = await session.execute(
                 select(User).
-                where(or_(User.email == email, User.id == user_id))
+                where(or_(User.login == login, User.id == user_id))
             )
-            user = await session.execute(stmt)
             await session.commit()
-        await self.engine.dispose()
 
-        user = user.scalars().first()
+        try:
+            user = user.scalar_one()
+            user = UserModel.from_orm(user)
+            return user
+        except NoResultFound as ex:
+            raise UserNotFound(user_id=user_id, login=login) from ex
 
-        if user:
-            return user.to_dict()
-        else:
-            raise UserNotFound(user_id=user_id, email=email)
-
-    async def add_new_user(self, username, email, hashed_password):
+    async def add_new_user(self, user_credentials: UserModel):
         """
         Creates a new user in DB
-        :param username: username
-        :param email: email
-        :param hashed_password: password
-        :raise EmailAlreadyExist
         """
         async with self.async_session() as session:
-            stmt = (
-                insert(User).
-                values(
-                    username=username,
-                    email=email,
-                    password=hashed_password
-                )
-            )
-
             try:
-                await session.execute(stmt)
+                user_credentials = user_credentials.dict()
+                user = User(**user_credentials)
+                session.add(user)
                 await session.commit()
-            except IntegrityError as e:
+            except IntegrityError as ex:
                 await session.close()
-                raise EmailAlreadyExist(email) from e
-            finally:
-                await self.engine.dispose()
+                raise LoginAlreadyExists(user.login) from ex

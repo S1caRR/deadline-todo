@@ -3,6 +3,7 @@ from .exceptions import TaskNotFound
 from deadline_todo.models.task import Task, TaskModel, TaskListModel
 
 from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound
 
 
 class TaskDatabaseService:
@@ -10,12 +11,9 @@ class TaskDatabaseService:
         self.engine = engine
         self.async_session = async_session
 
-    async def fetch_tasks_list(self, user_id) -> TaskListModel:
+    async def fetch_tasks_list(self, user_id: int) -> TaskListModel:
         """
         Fetch all user's task from DB
-
-        :param user_id: user's id
-        :return: list of tasks in dictionary format
         """
         async with self.async_session() as session:
             result = await session.execute(
@@ -43,9 +41,12 @@ class TaskDatabaseService:
             )
             await session.commit()
 
-        task = TaskModel.from_orm(task.scalar_one())
-
-        return task
+        try:
+            task = task.scalar_one()
+            task = TaskModel.from_orm(task)
+            return task
+        except NoResultFound as ex:
+            raise TaskNotFound(task_id) from ex
 
     async def add_new_task(self, task_data: TaskModel):
         """
@@ -70,7 +71,7 @@ class TaskDatabaseService:
                 await session.close()
                 raise TaskNotFound(task_id)
 
-    async def update_task(self, user_id, task_id, new_task_data: TaskModel):
+    async def update_task(self, user_id: int, task_id: int, new_task_data: TaskModel):
         """
         Update task in DB
         """
