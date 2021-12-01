@@ -82,7 +82,7 @@ export default {
 
     async login(){
       const article = {
-        "email": "email",
+        "login": "login",
         "password": "password"
       };
       try {
@@ -105,8 +105,7 @@ export default {
 
     async register(){
       const article = {
-        "username": "username",
-        "email": "email",
+        "login": "login",
         "password": "password"
       };
       try {
