@@ -1,6 +1,6 @@
 from deadline_todo.db.auth import AuthDatabaseService
 import deadline_todo.config as config
-from deadline_todo.db.exceptions import EmailAlreadyExist, UserNotFound
+from deadline_todo.db.exceptions import LoginAlreadyExists, UserNotFound
 from deadline_todo.models.user import UserModel
 
 from aiohttp import web
@@ -30,7 +30,7 @@ async def register(request: web.Request):
         return web.json_response({'message': 'User successfully registered!'},
                                  status=201)
 
-    except EmailAlreadyExist as ex:
+    except LoginAlreadyExists as ex:
         raise web.HTTPBadRequest(text=str(ex))
 
     except JSONDecodeError:
@@ -50,11 +50,11 @@ async def login(request: web.Request):
 
         user_credentials = UserModel(**data)
 
-        user = await auth_db_service.fetch_user(email=user_credentials.email)
+        user = await auth_db_service.fetch_user(login=user_credentials.login)
 
         if user and user_credentials.password and not bcrypt.checkpw(user_credentials.password.encode(),
                                                                      user.password.encode()):
-            return web.HTTPUnauthorized(text='Wrong credentials')
+            raise web.HTTPUnauthorized(text='Wrong credentials')
         payload = {
             'user_id': user.id,
             'exp': datetime.utcnow() + timedelta(seconds=config.JWT_EXP_DELTA_SECONDS)

@@ -3,6 +3,7 @@ from .exceptions import TaskNotFound
 from deadline_todo.models.task import Task, TaskModel, TaskListModel
 
 from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound
 
 
 class TaskDatabaseService:
@@ -40,12 +41,12 @@ class TaskDatabaseService:
             )
             await session.commit()
 
-        task = task.scalar_one()
-        if task:
+        try:
+            task = task.scalar_one()
             task = TaskModel.from_orm(task)
             return task
-        else:
-            raise TaskNotFound(task_id)
+        except NoResultFound as ex:
+            raise TaskNotFound(task_id) from ex
 
     async def add_new_task(self, task_data: TaskModel):
         """

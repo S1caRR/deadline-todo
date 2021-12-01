@@ -1,9 +1,9 @@
 from .db_config import engine, async_session
-from .exceptions import EmailAlreadyExist, UserNotFound
+from .exceptions import LoginAlreadyExists, UserNotFound
 from deadline_todo.models.user import User, UserModel
 
-from sqlalchemy import select, insert, or_
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import select, or_
+from sqlalchemy.exc import IntegrityError, NoResultFound
 
 
 class AuthDatabaseService:
@@ -11,23 +11,23 @@ class AuthDatabaseService:
         self.engine = engine
         self.async_session = async_session
 
-    async def fetch_user(self, user_id=None, email=None) -> UserModel:
+    async def fetch_user(self, user_id=None, login=None) -> UserModel:
         """
         Fetch user from DB
         """
         async with self.async_session() as session:
             user = await session.execute(
                 select(User).
-                where(or_(User.email == email, User.id == user_id))
+                where(or_(User.login == login, User.id == user_id))
             )
             await session.commit()
 
-        user = user.scalar_one()
-        if user:
+        try:
+            user = user.scalar_one()
             user = UserModel.from_orm(user)
             return user
-        else:
-            raise UserNotFound(user_id=user_id, email=email)
+        except NoResultFound as ex:
+            raise UserNotFound(user_id=user_id, login=login) from ex
 
     async def add_new_user(self, user_credentials: UserModel):
         """
@@ -41,4 +41,4 @@ class AuthDatabaseService:
                 await session.commit()
             except IntegrityError as ex:
                 await session.close()
-                raise EmailAlreadyExist(task.email) from ex
+                raise LoginAlreadyExists(task.email) from ex
