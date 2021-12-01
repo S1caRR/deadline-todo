@@ -23,7 +23,7 @@ async def api_tasks(request: web.Request) -> web.Response:
     :param request:
     :return: json object with field 'data' witch contains list[dict[str, any]] of tasks
     """
-    user_id = request.user.get('user_id')
+    user_id = request.user.id
 
     tasks = await task_db_service.fetch_tasks_list(user_id)
     tasks = tasks.json(by_alias=True)
@@ -45,7 +45,7 @@ async def api_get_task(request: web.Request) -> web.Response:
     :return: json object with field 'data' witch contains task format dict[str, any]
     """
     try:
-        user_id = request.user.get('user_id')
+        user_id = request.user.id
         task_id = int(request.match_info.get('task_id'))
 
         task = await task_db_service.fetch_task(user_id, task_id)
@@ -66,7 +66,7 @@ async def api_new_task(request: web.Request) -> web.Response:
     """
     try:
         data = await request.json()
-        user_id = request.user.get('user_id')
+        user_id = request.user.id
 
         task = TaskModel(user_id=user_id, **data)
 
@@ -88,7 +88,7 @@ async def api_delete_task(request: web.Request) -> web.Response:
     :param request:
     """
     try:
-        user_id = request.user.get('user_id')
+        user_id = request.user.id
         task_id = int(request.match_info.get('task_id'))
 
         await task_db_service.delete_task(user_id, task_id)
@@ -112,7 +112,7 @@ async def api_update_task(request: web.Request) -> web.Response:
     :param request:
     """
     try:
-        user_id = request.user.get('user_id')
+        user_id = request.user.id
         task_id = int(request.match_info.get('task_id'))
 
         data = await request.json()

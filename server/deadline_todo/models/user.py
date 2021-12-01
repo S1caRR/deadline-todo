@@ -10,7 +10,7 @@ class User(Base):
     __tablename__ = "user"
 
     id = Column('id', Integer, primary_key=True)
-    username = Column('username', String(50), unique=True, nullable=False)
+    username = Column('username', String(50), nullable=False)
     password = Column('password', String(100), nullable=False)
     email = Column('email', String(50), unique=True, nullable=False)
 
@@ -28,9 +28,10 @@ class User(Base):
 
 class UserModel(BaseModel):
     id: int = None
-    username: constr(max_length=50)
+    username: constr(max_length=50) = None
     password: constr(max_length=100)
     email: constr(max_length=50)
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True

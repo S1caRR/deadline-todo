@@ -1,6 +1,7 @@
 from deadline_todo.db.auth import AuthDatabaseService
 import deadline_todo.config as config
 from deadline_todo.db.exceptions import EmailAlreadyExist, UserNotFound
+from deadline_todo.models.user import UserModel
 
 from aiohttp import web
 from datetime import datetime, timedelta
@@ -17,17 +18,14 @@ auth_db_service = AuthDatabaseService()
 async def register(request: web.Request):
     """
     Register user method
-
-    :param request:
     """
     try:
         data = await request.json()
 
-        username = data.get('username')
-        email = data.get('email')
-        password = bcrypt.hashpw(data.get('password').encode(), bcrypt.gensalt()).decode()
+        user_credentials = UserModel(**data, exclude={'id'})
+        user_credentials.password = bcrypt.hashpw(user_credentials.password.encode(), bcrypt.gensalt()).decode()
 
-        await auth_db_service.add_new_user(username, email, password)
+        await auth_db_service.add_new_user(user_credentials)
 
         return web.json_response({'message': 'User successfully registered!'},
                                  status=201)
@@ -50,15 +48,15 @@ async def login(request: web.Request):
     try:
         data = await request.json()
 
-        email = data.get('email')
-        password = data.get('password')
+        user_credentials = UserModel(**data)
 
-        user = await auth_db_service.fetch_user(email=email)
+        user = await auth_db_service.fetch_user(email=user_credentials.email)
 
-        if user and password and not bcrypt.checkpw(password.encode(), user.get('password').encode()):
+        if user and user_credentials.password and not bcrypt.checkpw(user_credentials.password.encode(),
+                                                                     user.password.encode()):
             return web.HTTPUnauthorized(text='Wrong credentials')
         payload = {
-            'user_id': user.get('user_id'),
+            'user_id': user.id,
             'exp': datetime.utcnow() + timedelta(seconds=config.JWT_EXP_DELTA_SECONDS)
         }
         jwt_token = jwt.encode(payload, config.JWT_SECRET, algorithm=config.JWT_ALGORITHM)

@@ -15,7 +15,8 @@ async def init_app() -> web.Application:
         '*': aiohttp_cors.ResourceOptions(allow_credentials=True,
                                           expose_headers='*',
                                           allow_headers='*',
-                                          allow_methods='*')})
+                                          allow_methods='*'
+                                          )})
     for route in app.router.routes():
         cors.add(route)
 
