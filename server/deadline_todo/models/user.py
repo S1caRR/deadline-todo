@@ -14,14 +14,6 @@ class User(Base):
     password = Column('password', String(100), nullable=False)
     email = Column('email', String(50), unique=True, nullable=False)
 
-    def to_dict(self):
-        return {
-            'user_id': self.id,
-            'username': self.username,
-            'email': self.email,
-            'password': self.password
-        }
-
     def __repr__(self):
         return f'User(id={self.id}, username={self.username}, password={self.password}, email={self.email})'
 
