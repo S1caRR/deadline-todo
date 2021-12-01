@@ -38,11 +38,20 @@ export default {
     genCalendarObject(){
 
       let dateNow = new Date()
-      const fromDate = `${ dateNow.getFullYear() }-${ dateNow.getMonth() + 1 }-${ dateNow.getDate() }` // format: 'YYYY-MM-DD
-      const toDate = `${ dateNow.getFullYear()+1 }-${ dateNow.getMonth() + 1 }-${ dateNow.getDate() }`
+      let dateNowISO = dateNow.toISOString().split('T')[0].split('-')
+
+      let dateAfter = new Date()
+      // Прибавляем месяц к новой дате, но в данном случае ещё меняется и год, это нужно учесть
+      dateAfter.setMonth((Number(dateNowISO[1])+1)%13)
+      dateAfter.setFullYear(Number(dateNowISO[0])+1)
+      let dateAfterISO = dateAfter.toISOString().split('T')[0].split('-')
+
+      const fromDate = `${dateNowISO[0]}-${dateNowISO[1]}-${dateNowISO[2]}`
+      const toDate = `${dateAfterISO[0]}-${dateAfterISO[1]}-${dateAfterISO[2]}`
 
       this.cObj = genCalendarObj(fromDate, toDate).date
     },
+
 
     async fetchTasks(){
       this.token = localStorage.getItem('token').toString()
