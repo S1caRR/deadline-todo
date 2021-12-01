@@ -34,7 +34,8 @@
 <script>
 import TaskList from "./TaskList";
 import DialogWindow from "../UI/DialogWindow";
-// import axios from 'axios';
+import axios from "axios";
+
 
 export default {
 
@@ -45,24 +46,58 @@ export default {
     return{
       taskList: [],
       newTaskTitle: "",
-      newTaskBody:"",
-      dialogVisible: false
+      newTaskBody: "",
+      dialogVisible: false,
+      response: {
+        message: ""
+      }
     }
   },
 
   methods: {
-
-    addTask() {
+    async addTask() {
       if (this.newTaskTitle) {
+
+        let isoDate = new Date()
+
+        isoDate.setFullYear(this.date.year)
+        isoDate.setMonth(this.date.month-1)
+        isoDate.setDate(this.date.day)
+
+        isoDate = isoDate.toISOString().split('.')[0]
+
         const newTask = {
-          id: Date.now(),
-          title: this.newTaskTitle,
-          data: this.newTaskBody
+          task_name: this.newTaskTitle,
+          task_description: this.newTaskBody,
+          deadline: isoDate
         }
+
+        const article = {
+          task_name: this.newTaskTitle,
+          task_description: this.newTaskBody,
+          deadline: isoDate
+        };
+
+
+        this.token = localStorage.getItem('token').toString()
+        const headers = {
+          Authorization: this.token
+        }
+
+        try {
+          // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2NDA3MTEyNjF9.YQiVoz3GBnTw7ZT_bNK8api3_sIwHghLWZT__9ob8qM
+          const response = await axios.post('http://localhost:8081/api/tasks', article, {headers})
+          this.response.message = response.data.message
+          alert(this.response.message)
+        } catch (e) {
+          alert('error')
+        }
+
         this.taskList.push(newTask)
         this.newTaskTitle = ""
         this.newTaskBody = ""
         this.dialogVisible = false
+
       }
     },
 
@@ -71,20 +106,20 @@ export default {
     },
 
     getMyTasks() {
-      // for (let i = 0; i < this.responseTasklist; i++) {
-      //   let splittedISO = this.responseTasklist[i].deadline.split('T')
-      //   if ( splittedISO [0] === `${this.date.year}-${this.date.month}-${this.date.day}`) {
-      //     this.taskList.push(this.responseTasklist[i])
-      //   }
-      //   alert(splittedISO)
-      // }
-
       this.taskList = this.responseTasklist
+      let isoDate = new Date()
 
+      isoDate.setFullYear(this.date.year)
+      isoDate.setMonth(this.date.month-1)
+      isoDate.setDate(this.date.day)
+
+      isoDate = isoDate.toISOString().split('T')[0]
       this.taskList = this.taskList.filter( (obj) => {
-        let isoString = obj["deadline"].split('T')
+        let isoString = obj.deadline.split('T')[0]
 
-        if (isoString[0] === `${this.date.year}-${this.date.month}-0${this.date.day}`){
+        //`${this.date.year}-${this.date.month}-0${this.date.day}`
+
+        if (isoString === isoDate){
           return obj
         }
       });
@@ -92,14 +127,7 @@ export default {
     },
 
     refreshTasklist(){
-      this.taskList = this.responseTasklist
-      this.taskList = this.taskList.filter( (obj) => {
-        let isoString = obj["deadline"].split('T')
-
-        if (isoString[0] === `${this.date.year}-${this.date.month}-0${this.date.day}`){
-          return obj
-        }
-      });
+      this.getMyTasks()
     }
 
   },

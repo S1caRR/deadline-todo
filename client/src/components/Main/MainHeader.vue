@@ -6,9 +6,12 @@
           <a href="#"><img src="../../img/logo.png" alt="logo"></a>
         </div>
 
-        <div class="menu">
-          <a href="" @click.prevent="showDialog">Вход</a>
-          <a href="">Регистрация</a>
+        <div class="menu" v-if="!authorized">
+          <a href="" @click.prevent="showDialog('Login')">Вход</a>
+          <a href="" @click.prevent="showDialog('Registration')">Регистрация</a>
+        </div>
+        <div class="menu" style="color: white; font-size: 20px" v-else>
+          {{loginForCheck.email}}
         </div>
       </div>
 
@@ -20,7 +23,8 @@
         <input type="text" size="50" placeholder="Логин">
         <input type="text" size="100" placeholder="Пароль">
 
-        <a href="#" @click="login(), showDialog()">Добавить</a>
+        <a href="#" v-if="isLogin" @click="login(), showDialog()">Войти</a>
+        <a href="#" v-else-if="isRegistration" @click="register(), showDialog()">Зарегистрироваться</a>
 
       </div>
     </dialog-window>
@@ -40,6 +44,8 @@ export default {
     return{
 
       dialogVisible: false,
+      isLogin: false,
+      isRegistration: false,
 
       loginForCheck: {
         "email":"email",
@@ -49,42 +55,74 @@ export default {
       responseLogin: {
         message: "",
         token: ""
+      },
+
+      responseRegistration:{
+        message: ""
       }
 
     }
   },
 
+  props:{
+    authorized: { type: Boolean }
+  },
 
   methods:{
 
-    showDialog(){
+    showDialog(operation){
       this.dialogVisible = !this.dialogVisible
+      if (operation === 'Login'){
+        this.isLogin = !this.isLogin
+      }
+      else if (operation === 'Registration'){
+        this.isRegistration = !this.isRegistration
+      }
     },
 
     async login(){
       const article = {
         "email": "email",
         "password": "password"
-        // "Content-Type": "application/json"
       };
       try {
         // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2NDA3MTEyNjF9.YQiVoz3GBnTw7ZT_bNK8api3_sIwHghLWZT__9ob8qM
 
         const response = await axios.post('http://localhost:8081/api/login', article)
+
         this.responseLogin.message  = response.data.message
         this.responseLogin.token = response.data.token
-        alert(this.responseLogin.token)
-        localStorage.setItem('token', this.responseLogin.token)
+
+        localStorage.setItem("token", this.responseLogin.token)
+
+        // Меняем статус авторизации
+        this.$emit("changeAuthStatus", true)
+
       } catch (e) {
         alert('error')
       }
+    },
 
+    async register(){
+      const article = {
+        "username": "username",
+        "email": "email",
+        "password": "password"
+      };
+      try {
+        // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2NDA3MTEyNjF9.YQiVoz3GBnTw7ZT_bNK8api3_sIwHghLWZT__9ob8qM
 
+        const response = await axios.post('http://localhost:8081/api/register', article)
+
+        this.responseRegistration.message  = response.data.message
+      } catch (e) {
+        alert('Логин уже зарегистрирован')
+      }
     },
 
   },
 
-  created() {
+  watch:{
 
   }
 }
