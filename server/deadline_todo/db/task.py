@@ -1,6 +1,6 @@
 from .db_config import engine, async_session
 from .exceptions import TaskNotFound
-from deadline_todo.models.task import Task, TaskModel
+from deadline_todo.models.task import Task, TaskModel, TaskListModel
 
 from typing import List
 
@@ -14,7 +14,7 @@ class TaskDatabaseService:
         self.engine = engine
         self.async_session = async_session
 
-    async def fetch_tasks_list(self, user_id) -> List[TaskModel]:
+    async def fetch_tasks_list(self, user_id) -> TaskListModel:
         """
         Fetch all user's task from DB
 
@@ -32,6 +32,8 @@ class TaskDatabaseService:
         for task in result.scalars().all():
             task = TaskModel.from_orm(task)
             tasks_list.append(task)
+
+        tasks_list = TaskListModel(tasks=tasks_list)
 
         return tasks_list
 

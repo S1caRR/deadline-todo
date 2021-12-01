@@ -1,3 +1,5 @@
+import json
+
 from deadline_todo.middlewares.auth_middleware import jwt_required
 from deadline_todo.db.task import TaskDatabaseService
 from deadline_todo.db.exceptions import TaskNotFound
@@ -24,10 +26,11 @@ async def api_tasks(request: web.Request) -> web.Response:
     user_id = request.user.get('user_id')
 
     tasks = await task_db_service.fetch_tasks_list(user_id)
-    tasks = list(map(lambda task: task.json(exclude={'user_id'}), tasks))
+    tasks = tasks.json()
+    # tasks = list(map(lambda task: task.json(exclude={'user_id'}), tasks))
 
     return web.json_response({
-        'data': tasks
+        'data': json.loads(tasks)
     },
         status=200)
 
@@ -46,8 +49,9 @@ async def api_get_task(request: web.Request) -> web.Response:
         task_id = int(request.match_info.get('task_id'))
 
         task = await task_db_service.fetch_task(user_id, task_id)
+        task = task.json(exclude={'user_id'})
 
-        return web.json_response({'data': task.json()},
+        return web.json_response({'data': json.loads(task)},
                                  status=200)
 
     except TaskNotFound as ex:
