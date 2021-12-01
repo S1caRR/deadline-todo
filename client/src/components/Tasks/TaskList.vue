@@ -1,6 +1,6 @@
 <template>
   <div class="task-list-container">
-    <button @click="refreshTasklist">GetTasksss22</button>
+<!--    <button @click="refreshTasklist">GetTasksss22</button>-->
     <div class="tasks"
          v-for="task in taskList"
          :key="task.id">
@@ -40,6 +40,11 @@ export default {
 
   created() {
     this.refreshTasklist()
+  },
+  watch:{
+    taskListProp(){
+      this.refreshTasklist()
+    }
   }
 
 }
