@@ -4,7 +4,7 @@
     <div class="content-header">
       <div class="content-header-block-date">
         <h2>Список задач на сегодня</h2>
-        <button @click="fetchTasks">GetTasks</button>
+<!--        <button @click="fetchTasks">GetTasks</button>-->
       </div>
     </div>
 
@@ -27,6 +27,7 @@ export default {
 
   data() {
     return{
+      response: null,
       responseTask: { },
       responseTasklist: [],
       cObj: {},
@@ -64,8 +65,8 @@ export default {
         // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2NDA3MTEyNjF9.YQiVoz3GBnTw7ZT_bNK8api3_sIwHghLWZT__9ob8qM
         // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjpudWxsLCJleHAiOjE2NDA3OTIxNDh9.gK_0QsVkXhwlAiFrJusYv_nu8RiCmIFkBJd6GGy7EWY
 
-        const response = await axios.get('http://localhost:8081/api/tasks', {headers})
-        this.responseTask = response
+        this.response = await axios.get('http://localhost:8081/api/tasks', {headers})
+        this.responseTask = this.response
         this.responseTasklist = Array.from(this.responseTask.data.data)
 
       } catch (e) {
@@ -76,13 +77,23 @@ export default {
 
     },
 
+    refreshResponse(){
+      this.responseTask = this.response
+      this.responseTasklist = Array.from(this.responseTask.data.data)
+    }
+
   },
 
   created() {
     this.genCalendarObject()
-
+    this.fetchTasks()
   },
 
+  watch:{
+    response(){
+      this.refreshResponse()
+    }
+  }
 }
 </script>
 

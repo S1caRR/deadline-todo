@@ -4,7 +4,7 @@
 <!--    DayHeader-->
     <div class="date-now-header" >
       {{ date.day }} - {{ date.month }} - {{ date.year }}
-      <button @click="getMyTasks">GetTasksss</button>
+<!--      <button @click="getMyTasks">GetTasksss</button>-->
     </div>
 
 <!--    TaskList-->
@@ -89,6 +89,17 @@ export default {
         }
       });
 
+    },
+
+    refreshTasklist(){
+      this.taskList = this.responseTasklist
+      this.taskList = this.taskList.filter( (obj) => {
+        let isoString = obj["deadline"].split('T')
+
+        if (isoString[0] === `${this.date.year}-${this.date.month}-0${this.date.day}`){
+          return obj
+        }
+      });
     }
 
   },
@@ -100,6 +111,12 @@ export default {
 
   created() {
     this.getMyTasks()
+  },
+
+  watch:{
+    responseTasklist(){
+      this.refreshTasklist()
+    }
   }
 
 }
