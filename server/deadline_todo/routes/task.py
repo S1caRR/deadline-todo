@@ -2,6 +2,8 @@ from deadline_todo.middlewares.auth_middleware import jwt_required
 from deadline_todo.db.task import TaskDatabaseService
 from deadline_todo.db.exceptions import TaskNotFound
 
+from deadline_todo.models.task import TaskModel
+
 from aiohttp import web
 from json import JSONDecodeError
 
@@ -22,6 +24,7 @@ async def api_tasks(request: web.Request) -> web.Response:
     user_id = request.user.get('user_id')
 
     tasks = await task_db_service.fetch_tasks_list(user_id)
+    tasks = list(map(lambda task: task.json(exclude={'user_id'}), tasks))
 
     return web.json_response({
         'data': tasks
@@ -44,7 +47,7 @@ async def api_get_task(request: web.Request) -> web.Response:
 
         task = await task_db_service.fetch_task(user_id, task_id)
 
-        return web.json_response({'data': task},
+        return web.json_response({'data': task.json()},
                                  status=200)
 
     except TaskNotFound as ex:
@@ -56,18 +59,14 @@ async def api_get_task(request: web.Request) -> web.Response:
 async def api_new_task(request: web.Request) -> web.Response:
     """
     Method creates task
-
-    :param request:
     """
     try:
-        task = await request.json()
-
+        data = await request.json()
         user_id = request.user.get('user_id')
-        task_name = task.get('task_name')
-        task_desc = task.get('task_description')
-        deadline = task.get('deadline')
 
-        await task_db_service.add_new_task(user_id, task_name=task_name, desc=task_desc, deadline=deadline)
+        task = TaskModel(user_id=user_id, **data)
+
+        await task_db_service.add_new_task(task)
 
         return web.json_response({'message': 'Task was successfully created!'},
                                  status=201)
@@ -113,17 +112,10 @@ async def api_update_task(request: web.Request) -> web.Response:
         task_id = int(request.match_info.get('task_id'))
 
         data = await request.json()
+        task_data = TaskModel(**data)
 
-        new_task_name = data.get('task_name')
-        new_desc = data.get('task_description')
-        new_deadline = data.get('deadline')
-        is_finished = data.get('is_finished')
+        await task_db_service.update_task(user_id, task_id, task_data)
 
-        await task_db_service.update_task(user_id, task_id,
-                                          task_name=new_task_name,
-                                          desc=new_desc,
-                                          deadline=new_deadline,
-                                          is_finished=is_finished)
         return web.json_response({'id': task_id},
                                  status=200)
 
