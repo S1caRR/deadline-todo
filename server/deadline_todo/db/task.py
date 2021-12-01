@@ -2,11 +2,7 @@ from .db_config import engine, async_session
 from .exceptions import TaskNotFound
 from deadline_todo.models.task import Task, TaskModel, TaskListModel
 
-from typing import List
-
-from datetime import datetime
-from sqlalchemy import select, insert, update, delete
-from sqlalchemy.orm.exc import UnmappedError
+from sqlalchemy import select
 
 
 class TaskDatabaseService:

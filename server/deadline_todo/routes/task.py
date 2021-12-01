@@ -26,7 +26,7 @@ async def api_tasks(request: web.Request) -> web.Response:
     user_id = request.user.get('user_id')
 
     tasks = await task_db_service.fetch_tasks_list(user_id)
-    tasks = tasks.json()
+    tasks = tasks.json(by_alias=True)
     # tasks = list(map(lambda task: task.json(exclude={'user_id'}), tasks))
 
     return web.json_response({
@@ -49,7 +49,7 @@ async def api_get_task(request: web.Request) -> web.Response:
         task_id = int(request.match_info.get('task_id'))
 
         task = await task_db_service.fetch_task(user_id, task_id)
-        task = task.json(exclude={'user_id'})
+        task = task.json(exclude={'user_id'}, by_alias=True)
 
         return web.json_response({'data': json.loads(task)},
                                  status=200)
