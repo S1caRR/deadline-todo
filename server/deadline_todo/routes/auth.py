@@ -1,3 +1,5 @@
+import logging
+
 from deadline_todo.db.auth import AuthDatabaseService
 import deadline_todo.config as config
 from deadline_todo.db.exceptions import LoginAlreadyExists, UserNotFound
@@ -53,8 +55,7 @@ async def login(request: web.Request):
 
         user = await auth_db_service.fetch_user(login=user_credentials.login)
 
-        if user and user_credentials.password and not bcrypt.checkpw(user_credentials.password.encode(),
-                                                                     user.password.encode()):
+        if not bcrypt.checkpw(user_credentials.password.encode(), user.password.encode()):
             raise web.HTTPUnauthorized(text='Wrong credentials')
         payload = {
             'user_id': user.id,
@@ -69,7 +70,9 @@ async def login(request: web.Request):
             status=200)
 
     except UserNotFound as ex:
+        logging.exception(ex)
         raise web.HTTPBadRequest(text=str(ex))
 
-    except JSONDecodeError:
-        raise web.HTTPBadRequest(text='Wrong input data')
+    except (JSONDecodeError, ValidationError) as ex:
+        logging.exception(ex)
+        raise web.HTTPBadRequest(text='Wrong data format')

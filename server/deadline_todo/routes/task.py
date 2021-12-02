@@ -3,11 +3,11 @@ import json
 from deadline_todo.middlewares.auth_middleware import jwt_required
 from deadline_todo.db.task import TaskDatabaseService
 from deadline_todo.db.exceptions import TaskNotFound
-
 from deadline_todo.models.task import TaskModel
 
 from aiohttp import web
 from json import JSONDecodeError
+from pydantic import ValidationError
 
 
 task_router = web.RouteTableDef()
@@ -27,7 +27,6 @@ async def api_tasks(request: web.Request) -> web.Response:
 
     tasks = await task_db_service.fetch_tasks_list(user_id)
     tasks = tasks.json(by_alias=True)
-    # tasks = list(map(lambda task: task.json(exclude={'user_id'}), tasks))
 
     return web.json_response({
         'data': json.loads(tasks)
@@ -75,8 +74,8 @@ async def api_new_task(request: web.Request) -> web.Response:
         return web.json_response({'message': 'Task was successfully created!'},
                                  status=201)
 
-    except JSONDecodeError:
-        raise web.HTTPBadRequest(text='Wrong input data')
+    except (JSONDecodeError, ValidationError):
+        raise web.HTTPBadRequest(text='Wrong data format')
 
 
 @task_router.delete(r'/api/tasks/{task_id:\d+}')
@@ -84,8 +83,6 @@ async def api_new_task(request: web.Request) -> web.Response:
 async def api_delete_task(request: web.Request) -> web.Response:
     """
     Method deletes task by id
-
-    :param request:
     """
     try:
         user_id = request.user.id
@@ -99,17 +96,12 @@ async def api_delete_task(request: web.Request) -> web.Response:
     except TaskNotFound as ex:
         raise web.HTTPBadRequest(text=str(ex))
 
-    except JSONDecodeError:
-        raise web.HTTPBadRequest(text='Wrong input data')
-
 
 @task_router.patch(r'/api/tasks/{task_id:\d+}')
 @jwt_required
 async def api_update_task(request: web.Request) -> web.Response:
     """
     Method updates task by id
-
-    :param request:
     """
     try:
         user_id = request.user.id
@@ -126,5 +118,5 @@ async def api_update_task(request: web.Request) -> web.Response:
     except TaskNotFound as ex:
         raise web.HTTPBadRequest(text=str(ex))
 
-    except JSONDecodeError:
-        raise web.HTTPBadRequest(text='Wrong input data')
+    except (JSONDecodeError, ValidationError):
+        raise web.HTTPBadRequest(text='Wrong data format')

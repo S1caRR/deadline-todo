@@ -4,6 +4,7 @@ from routes.task import task_router
 
 from aiohttp import web
 import aiohttp_cors
+import logging
 
 
 async def init_app() -> web.Application:
@@ -19,6 +20,8 @@ async def init_app() -> web.Application:
                                           )})
     for route in app.router.routes():
         cors.add(route)
+
+    logging.basicConfig(filename='errors.log')
 
     return app
 
