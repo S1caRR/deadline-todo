@@ -1,5 +1,5 @@
 <template>
-  <div class="dialog" v-if="isShow" @click="hideDialog">
+  <div class="dialog" v-if="isShow" @click.prevent="hideDialog">
     <div class="dialog-content" @click.stop>
       <slot></slot>
     </div>
@@ -21,7 +21,7 @@ export default {
   },
   methods:{
     hideDialog() {
-      this.$emit('showDialog', false)
+      this.$emit('showDialog')
     }
   }
 }

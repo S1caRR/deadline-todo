@@ -3,7 +3,7 @@
 
     <div class="content-header">
       <div class="content-header-block-date">
-        <h2>Список задач на сегодня</h2>
+        <h2>Список задач на месяц</h2>
 <!--        <button @click="fetchTasks">GetTasks</button>-->
       </div>
     </div>
@@ -47,6 +47,7 @@ export default {
       dateAfter.setFullYear(Number(dateNowISO[0])+1)
       let dateAfterISO = dateAfter.toISOString().split('T')[0].split('-')
 
+      // Вроде можно без сбора по кусочкам и деления ( убрать split('-') ) ???
       const fromDate = `${dateNowISO[0]}-${dateNowISO[1]}-${dateNowISO[2]}`
       const toDate = `${dateAfterISO[0]}-${dateAfterISO[1]}-${dateAfterISO[2]}`
 
@@ -55,7 +56,7 @@ export default {
 
 
     async fetchTasks(){
-      this.token = localStorage.getItem('token').toString()
+      this.token = localStorage.getItem("token").toString()
       const headers = {
         Authorization: this.token
       }
@@ -67,7 +68,7 @@ export default {
 
         this.response = await axios.get('http://localhost:8081/api/tasks', {headers})
         this.responseTask = this.response
-        this.responseTasklist = Array.from(this.responseTask.data.data)
+        this.responseTasklist = Array.from(this.responseTask.data.data.tasks)
 
       } catch (e) {
         alert(e.message)
@@ -79,7 +80,7 @@ export default {
 
     refreshResponse(){
       this.responseTask = this.response
-      this.responseTasklist = Array.from(this.responseTask.data.data)
+      this.responseTasklist = Array.from(this.responseTask.data.data.tasks)
     }
 
   },
@@ -92,7 +93,9 @@ export default {
   watch:{
     response(){
       this.refreshResponse()
-    }
+      this.token = localStorage.getItem('token').toString()
+    },
+
   }
 }
 </script>

@@ -1,10 +1,10 @@
 <template>
   <div>
-    <main-header/>
+    <main-header :authorized="authorized" @changeAuthStatus="changeAuthStatus" />
     <div>
       <div class="main">
         <main-sidebar/>
-        <main-content/>
+        <main-content v-if="authorized" />
       </div>
     </div>
   </div>
@@ -22,14 +22,29 @@ export default {
 
   data(){
     return{
-
+      authorized: false
     }
   },
 
   methods:{
+    abortLocalStorage(){
+      localStorage.clear()
+    },
 
+    changeAuthStatus(status=false){
+      this.authorized = status
+    }
+  },
+
+  mounted() {
+    this.abortLocalStorage()
+  },
+
+  watch:{
+    authorized(){
+      return this.authorized
+    }
   }
-
 }
 </script>
 
