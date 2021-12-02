@@ -10,8 +10,7 @@ Base = declarative_base()
 
 
 engine = create_async_engine(
-    config.ENGINE,
-    echo=True
+    config.ENGINE
 )
 
 async_session = sessionmaker(

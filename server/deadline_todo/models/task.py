@@ -23,7 +23,8 @@ class Task(Base):
     user_id = Column('user_id', ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
-        return f'Task(id={self.id}, username={self.name}, password={self.deadline}, email={self.user_id})'
+        return f'Task(id={self.id}, name={self.name}, description={self.description}, ' \
+               f'deadline={self.deadline}, is_finished={self.is_finished}, user_id={self.user_id})'
 
 
 class TaskModel(BaseModel):

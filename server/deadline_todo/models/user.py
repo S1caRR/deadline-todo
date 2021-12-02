@@ -14,7 +14,7 @@ class User(Base):
     password = Column('password', String(100), nullable=False)
 
     def __repr__(self):
-        return f'User(id={self.id}, username={self.username}, password={self.password}, email={self.email})'
+        return f'User(id={self.id}, login={self.login}, password={self.password})'
 
 
 class UserModel(BaseModel):
