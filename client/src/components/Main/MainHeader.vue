@@ -10,8 +10,12 @@
           <a href="" @click.prevent="showDialog('Login')">Вход</a>
           <a href="" @click.prevent="showDialog('Registration')">Регистрация</a>
         </div>
-        <div class="menu" style="color: white; font-size: 20px" v-else>
-          {{loginForCheck.email}}
+
+<!--        Убрать инлайны-->
+        <div class="menu" v-else style="
+              color: white;
+              font-size: 20px" >
+          {{loginForCheck.login}}
         </div>
       </div>
 
@@ -23,8 +27,8 @@
         <input type="text" size="50" placeholder="Логин">
         <input type="text" size="100" placeholder="Пароль">
 
-        <a href="#" v-if="isLogin" @click="login(), showDialog()">Войти</a>
-        <a href="#" v-else-if="isRegistration" @click="register(), showDialog()">Зарегистрироваться</a>
+        <a href="#" v-if="isLogin" @click="login(), showDialog('Login')">Войти</a>
+        <a href="#" v-else-if="isRegistration" @click="register(), showDialog('Registration')">Зарегистрироваться</a>
 
       </div>
     </dialog-window>
@@ -48,7 +52,7 @@ export default {
       isRegistration: false,
 
       loginForCheck: {
-        "email":"email",
+        "login":"login",
         "password":"password"
       },
 
@@ -122,7 +126,12 @@ export default {
   },
 
   watch:{
-
+    isLogin(){
+      return this.isLogin
+    },
+    isRegistration(){
+      return this.isRegistration
+    }
   }
 }
 
