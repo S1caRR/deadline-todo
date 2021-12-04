@@ -48,6 +48,7 @@ export default {
   background: rgba(0, 0, 0, 0.5);
   position: fixed;
   display: flex;
+  z-index: 1;
 }
 
 .dialog-content{
@@ -56,5 +57,6 @@ export default {
   border-radius: 12px;
   padding: 20px;
 }
+
 
 </style>

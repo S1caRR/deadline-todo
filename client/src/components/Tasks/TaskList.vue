@@ -54,5 +54,7 @@ export default {
 </script>
 
 <style scoped>
-
+.tasks{
+  margin-bottom: 10px;
+}
 </style>

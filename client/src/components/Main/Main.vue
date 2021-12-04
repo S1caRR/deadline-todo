@@ -48,12 +48,13 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 
 .main{
   display: grid;
-  grid-template-columns: 1fr 5fr;
-  height: 1080px;
+  grid-template-columns:2fr 5fr;
+  //height: 1080px;
+
 }
 
 /*#nav {*/

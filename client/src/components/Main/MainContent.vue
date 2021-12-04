@@ -100,12 +100,23 @@ export default {
 </script>
 
 <style scoped lang="scss">
+#content{
+  //background: linear-gradient(to right top, #404297, #404297, #4a0771);
+  //background: #16E0B0;
+  margin: 1px 20% 0px 2px;
+  border-radius: 10px;
+  border: 2px #90A5E6 solid;
+  width: 70%;
+  //margin-right: 20%;
+
+}
 .content-header {
   width: 90%;
   margin: 0 auto;
   display: block;
   //justify-content: space-between;
   align-items: center;
+
 }
 .content-header-block-date {
   display: block;
