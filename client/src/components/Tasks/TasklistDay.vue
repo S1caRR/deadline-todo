@@ -54,6 +54,11 @@ export default {
     }
   },
 
+  props: {
+    date: { },
+    responseTasklist: { }
+  },
+
   methods: {
     async addTask() {
       if (this.newTaskTitle) {
@@ -98,6 +103,7 @@ export default {
         this.newTaskBody = ""
         this.dialogVisible = false
 
+        // this.refreshTasklist()
       }
     },
 
@@ -132,10 +138,7 @@ export default {
 
   },
 
-  props: {
-    date: { },
-    responseTasklist: { }
-  },
+
 
   created() {
     this.getMyTasks()

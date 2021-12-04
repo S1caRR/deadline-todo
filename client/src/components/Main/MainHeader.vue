@@ -21,11 +21,13 @@
 
     </div>
 
-    <dialog-window :isShow="dialogVisible" @showDialog="showDialog">
+    <dialog-window :isShow="dialogVisible" :isLogin="isLogin" :isRegistration="isRegistration" @showDialog="showDialog">
       <div class="content-input-tasks" >
+        <h1 v-if="isLogin">Вход</h1>
+        <h1 v-else>Регистрация</h1>
 
-        <input type="text" size="50" placeholder="Логин">
-        <input type="text" size="100" placeholder="Пароль">
+        <input v-model="loginForCheck.inputLogin" type="text" size="50" placeholder="Логин">
+        <input v-model="loginForCheck.inputPassword" type="text" size="100" placeholder="Пароль">
 
         <a href="#" v-if="isLogin" @click="login(), showDialog('Login')">Войти</a>
         <a href="#" v-else-if="isRegistration" @click="register(), showDialog('Registration')">Зарегистрироваться</a>
@@ -52,8 +54,8 @@ export default {
       isRegistration: false,
 
       loginForCheck: {
-        "login":"login",
-        "password":"password"
+        inputLogin: 'login',
+        inputPassword: 'password'
       },
 
       responseLogin: {
@@ -86,8 +88,8 @@ export default {
 
     async login(){
       const article = {
-        "login": "login",
-        "password": "password"
+        "login": this.loginForCheck.inputLogin,
+        "password": this.loginForCheck.inputPassword
       };
       try {
         // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2NDA3MTEyNjF9.YQiVoz3GBnTw7ZT_bNK8api3_sIwHghLWZT__9ob8qM
@@ -109,15 +111,17 @@ export default {
 
     async register(){
       const article = {
-        "login": "login",
-        "password": "password"
+        "login": this.loginForCheck.inputLogin,
+        "password": this.loginForCheck.inputPassword
       };
+      let response
       try {
         // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2NDA3MTEyNjF9.YQiVoz3GBnTw7ZT_bNK8api3_sIwHghLWZT__9ob8qM
 
-        const response = await axios.post('http://localhost:8081/api/register', article)
+         response = await axios.post('http://localhost:8081/api/register', article)
 
-        this.responseRegistration.message  = response.data.message
+        this.responseRegistration.message = response.data.message
+        alert(this.responseRegistration.message)
       } catch (e) {
         alert('Логин уже зарегистрирован')
       }

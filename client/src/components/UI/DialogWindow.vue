@@ -17,11 +17,22 @@ export default {
       type: Boolean,
       required: true,
       default: false
-    }
+    },
+    isLogin: {},
+    isRegistration: {},
   },
   methods:{
     hideDialog() {
-      this.$emit('showDialog')
+      if (this.isLogin){
+        this.$emit('showDialog', 'Login')
+      }
+      else if (this.isRegistration) {
+        this.$emit('showDialog', 'Registration')
+      }
+      else {
+        this.$emit('showDialog')
+      }
+
     }
   }
 }

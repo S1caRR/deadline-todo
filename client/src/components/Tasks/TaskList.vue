@@ -4,7 +4,8 @@
     <div class="tasks"
          v-for="task in taskList"
          :key="task.id">
-        <task-item :taskTitle="task.task_name" />
+
+        <task-item :task="task" @removeTask="removeTask"/>
 
 <!--        <a href="#" @click="deleteTask(task)">Удалить</a>-->
     </div>
@@ -27,13 +28,12 @@ export default {
   },
 
   methods: {
-    deleteTask(task){
-      // const removeIndex = this.taskList.findIndex( item => item.id === 37 );
-      this.taskList.slice(this.taskList.findIndex(task))
-    },
-
     refreshTasklist(){
       this.taskList = this.taskListProp
+    },
+    removeTask(task){
+      this.taskList.splice(this.taskList.indexOf(task), 1)
+      this.refreshTasklist()
     }
 
   },
@@ -44,6 +44,9 @@ export default {
   watch:{
     taskListProp(){
       this.refreshTasklist()
+    },
+    taskList(){
+      return this.taskList
     }
   }
 

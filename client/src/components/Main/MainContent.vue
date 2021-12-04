@@ -63,7 +63,6 @@ export default {
 
       this.isPostLoading = true
       try {
-        // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2NDA3MTEyNjF9.YQiVoz3GBnTw7ZT_bNK8api3_sIwHghLWZT__9ob8qM
         // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjpudWxsLCJleHAiOjE2NDA3OTIxNDh9.gK_0QsVkXhwlAiFrJusYv_nu8RiCmIFkBJd6GGy7EWY
 
         this.response = await axios.get('http://localhost:8081/api/tasks', {headers})
