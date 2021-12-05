@@ -63,7 +63,6 @@ export default {
 
       this.isPostLoading = true
       try {
-        // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2NDA3MTEyNjF9.YQiVoz3GBnTw7ZT_bNK8api3_sIwHghLWZT__9ob8qM
         // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjpudWxsLCJleHAiOjE2NDA3OTIxNDh9.gK_0QsVkXhwlAiFrJusYv_nu8RiCmIFkBJd6GGy7EWY
 
         this.response = await axios.get('http://localhost:8081/api/tasks', {headers})
@@ -101,12 +100,23 @@ export default {
 </script>
 
 <style scoped lang="scss">
+#content{
+  //background: linear-gradient(to right top, #404297, #404297, #4a0771);
+  //background: #16E0B0;
+  margin: 1px 20% 0px 2px;
+  border-radius: 10px;
+  border: 2px #90A5E6 solid;
+  width: 70%;
+  //margin-right: 20%;
+
+}
 .content-header {
   width: 90%;
   margin: 0 auto;
   display: block;
   //justify-content: space-between;
   align-items: center;
+
 }
 .content-header-block-date {
   display: block;

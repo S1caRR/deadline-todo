@@ -54,6 +54,11 @@ export default {
     }
   },
 
+  props: {
+    date: { },
+    responseTasklist: { }
+  },
+
   methods: {
     async addTask() {
       if (this.newTaskTitle) {
@@ -98,6 +103,7 @@ export default {
         this.newTaskBody = ""
         this.dialogVisible = false
 
+        // this.refreshTasklist()
       }
     },
 
@@ -132,10 +138,7 @@ export default {
 
   },
 
-  props: {
-    date: { },
-    responseTasklist: { }
-  },
+
 
   created() {
     this.getMyTasks()
@@ -150,7 +153,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300&family=Karla:wght@300&family=Readex+Pro:wght@300&family=Tinos&display=swap');
 .date-now-container{
   margin: 20px;
 }
@@ -158,6 +162,27 @@ export default {
 .date-now-header{
   border-bottom: 2px solid teal;
   margin-bottom: 10px;
+  /*font-family: 'Readex Pro', sans-serif;*/
+  font-family: 'Karla', sans-serif;
+  font-weight: 1000;
+  font-size: 25px;
+  color: black;
+}
+a{
+  width: 100px;
+  padding: .2em 1em;
+  background-color: transparent;
+  border: 1px solid lightskyblue;
+  border-radius: .4em;
+  color: Black;
+  margin-right: .5em;
+  text-decoration: none;
+
+
+}
+
+a:hover{
+  background: rgba(173,216,230,0.3);
 }
 
 </style>

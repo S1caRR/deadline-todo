@@ -1,6 +1,6 @@
 <template>
-  <div class="dialog" v-if="isShow" @click.prevent="hideDialog">
-    <div class="dialog-content" @click.stop>
+  <div class="dialog" v-if="isShow" @mousedown.prevent="hideDialog" >
+    <div class="dialog-content" @mousedown.stop>
       <slot></slot>
     </div>
   </div>
@@ -17,11 +17,22 @@ export default {
       type: Boolean,
       required: true,
       default: false
-    }
+    },
+    isLogin: {},
+    isRegistration: {},
   },
   methods:{
     hideDialog() {
-      this.$emit('showDialog')
+      if (this.isLogin){
+        this.$emit('showDialog', 'Login')
+      }
+      else if (this.isRegistration) {
+        this.$emit('showDialog', 'Registration')
+      }
+      else {
+        this.$emit('showDialog')
+      }
+
     }
   }
 }
@@ -37,6 +48,7 @@ export default {
   background: rgba(0, 0, 0, 0.5);
   position: fixed;
   display: flex;
+  z-index: 1;
 }
 
 .dialog-content{
@@ -45,5 +57,6 @@ export default {
   border-radius: 12px;
   padding: 20px;
 }
+
 
 </style>
