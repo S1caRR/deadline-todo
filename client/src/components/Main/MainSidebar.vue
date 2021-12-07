@@ -27,7 +27,7 @@ export default {
   font-size: 20px;
   border-radius: 10px;
   position: sticky;
-  top: 0px;
+  top: 10px;
   z-index: 0;
   background: linear-gradient(to right top,  #90A5E6, #ABADDD);
   //height: 90%;

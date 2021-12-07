@@ -1,4 +1,4 @@
- <template>
+<template>
   <section id="content">
 
     <div class="content-header">
@@ -8,22 +8,24 @@
       </div>
     </div>
 
-    <div v-for="day of cObj" :key="day.value" >
-      <tasks-day v-if="day.inputRange" :date="day" :responseTasklist="responseTasklist" />
-    </div>
+    <calendar-month/>
 
+    <div class="task-day" v-for="dayDate of cObj" :key="dayDate.value" >
+      <tasks-day v-if="dayDate.inputRange" :date="dayDate" :responseTasklist="responseTasklist" />
+    </div>
 
   </section>
 </template>
 
 <script>
  //import TaskList from "../Tasks/TaskList";
- import TasksDay from "../Tasks/TasklistDay";
+ import TasksDay from "../Tasks/List/TasklistDay";
+ import CalendarMonth from "../Tasks/Calendar/CalendarMonth";
  import {genCalendarObj} from "calendar-generator";
  import axios from "axios";
 
 export default {
-  components:{TasksDay},
+  components:{TasksDay, CalendarMonth},
 
   data() {
     return{
@@ -31,13 +33,12 @@ export default {
       responseTask: { },
       responseTasklist: [],
       cObj: {},
-      token: ""
+      token: "",
     }
   },
 
   methods:{
     genCalendarObject(){
-
       let dateNow = new Date()
       let dateNowISO = dateNow.toISOString().split('T')[0].split('-')
 
@@ -57,26 +58,24 @@ export default {
 
     async fetchTasks(){
       this.token = localStorage.getItem("token").toString()
-      const headers = {
-        Authorization: this.token
+
+      const config = {
+        headers: {
+          Authorization: this.token
+        }
       }
 
-      this.isPostLoading = true
       try {
         // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjpudWxsLCJleHAiOjE2NDA3OTIxNDh9.gK_0QsVkXhwlAiFrJusYv_nu8RiCmIFkBJd6GGy7EWY
 
-        this.response = await axios.get('http://localhost:8081/api/tasks', {headers})
+        this.response = await axios.get('http://localhost:8081/api/tasks', config)
         this.responseTask = this.response
         this.responseTasklist = Array.from(this.responseTask.data.data.tasks)
 
       } catch (e) {
         alert(e.message)
-      } finally {
-        this.isPostLoading = false
       }
-
     },
-
     refreshResponse(){
       this.responseTask = this.response
       this.responseTasklist = Array.from(this.responseTask.data.data.tasks)
@@ -84,7 +83,7 @@ export default {
 
   },
 
-  created() {
+  mounted() {
     this.genCalendarObject()
     this.fetchTasks()
   },
@@ -108,14 +107,14 @@ export default {
   border: 2px #90A5E6 solid;
   width: 70%;
   //margin-right: 20%;
-
 }
 .content-header {
-  width: 90%;
+  width: 95%;
   margin: 0 auto;
   display: block;
   //justify-content: space-between;
   align-items: center;
+  border-bottom: 2px solid cadetblue;
 
 }
 .content-header-block-date {
@@ -135,8 +134,12 @@ export default {
     margin-bottom: 10px;
     border: 2px solid teal;
   }
-  .task-item{
+  .task-item:first-child{
+    border-top: 5px solid teal;
+  }
 
+  .task-day:first-child{
+    border-top: 5px solid teal;
   }
 }
 </style>
