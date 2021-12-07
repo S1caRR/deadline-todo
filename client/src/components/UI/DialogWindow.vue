@@ -15,30 +15,18 @@ export default {
   props:{
     isShow:{
       type: Boolean,
-      required: true,
       default: false
     },
-    isLogin: {},
-    isRegistration: {},
   },
   methods:{
     hideDialog() {
-      if (this.isLogin){
-        this.$emit('showDialog', 'Login')
-      }
-      else if (this.isRegistration) {
-        this.$emit('showDialog', 'Registration')
-      }
-      else {
-        this.$emit('showDialog')
-      }
-
+      this.$emit('hideDialog')
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 
 .dialog{
   top: 0;
@@ -57,6 +45,49 @@ export default {
   border-radius: 12px;
   padding: 20px;
 }
+.dialog-window {
+  .dialog-window-button {
+    text-align: end;
+    margin: .5em .3em;
+  }
 
+  a {
 
+    padding: .2em 1em;
+    background-color: transparent;
+    border: 1px solid lightskyblue;
+    border-radius: .4em;
+    color: Black;
+    //margin-right: .5em;
+
+    text-decoration: none;
+    font-size: 22px;
+
+  }
+
+  a:hover {
+    background: rgba(173, 216, 230, 0.3);
+  }
+
+  .content-input-tasks {
+    display: block;
+
+  }
+
+  input {
+    margin: 5px;
+    height: 40px;
+    padding: 1px 10px;
+    border-radius: 5px;
+  }
+
+  input[type="text"] {
+    font-size: 20px;
+  }
+
+  h1 {
+    margin: auto;
+    text-align: center;
+  }
+}
 </style>

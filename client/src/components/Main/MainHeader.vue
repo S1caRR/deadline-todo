@@ -16,24 +16,29 @@
               color: white;
               font-size: 20px" >
           <span class="headerLogin">{{loginForCheck.inputLogin}}</span>
-<!--          пока что не рабочая кнопка-->
           <a href="" @click.prevent="logout">Выход</a>
         </div>
       </div>
 
     </div>
 
-    <dialog-window class="dialog-window" :isShow="dialogVisible" :isLogin="isLogin" :isRegistration="isRegistration" @showDialog="showDialog">
+    <dialog-window class="dialog-window"
+                   :isShow="dialogVisible"
+                   :isLogin="isLogin"
+                   :isRegistration="isRegistration"
+                   @hideDialog="hideDialog">
       <div class="content-input-tasks" >
         <h1 v-if="isLogin">Вход</h1>
         <h1 v-else>Регистрация</h1>
 
-        <input v-model="loginForCheck.inputLogin" type="text" size="100" placeholder="Логин">
+        <input v-model="loginForCheck.inputLogin" type="text" size="40" placeholder="Логин">
         <br>
-        <input v-model="loginForCheck.inputPassword" type="text" size="100" placeholder="Пароль">
-
-        <a href="#" v-if="isLogin" @click="login(), showDialog('Login')">Войти</a>
-        <a href="#" v-else-if="isRegistration" @click="register(), showDialog('Registration')">Зарегистрироваться</a>
+        <input v-model="loginForCheck.inputPassword" type="text" size="40" placeholder="Пароль">
+        <br>
+        <div class="dialog-window-button">
+          <a href="#" v-if="isLogin" @click="login(), hideDialog()">Войти</a>
+          <a href="#" v-else-if="isRegistration" @click="register(), hideDialog()">Зарегистрироваться</a>
+        </div>
 
       </div>
     </dialog-window>
@@ -51,8 +56,8 @@ export default {
 
   data(){
     return{
-
       dialogVisible: false,
+
       isLogin: false,
       isRegistration: false,
 
@@ -68,7 +73,7 @@ export default {
 
       responseRegistration:{
         message: ""
-      }
+      },
 
     }
   },
@@ -78,7 +83,6 @@ export default {
   },
 
   methods:{
-
     showDialog(operation){
       this.dialogVisible = !this.dialogVisible
       if (operation === 'Login'){
@@ -87,6 +91,12 @@ export default {
       else if (operation === 'Registration'){
         this.isRegistration = !this.isRegistration
       }
+    },
+
+    hideDialog(){
+      this.dialogVisible = false
+      this.isLogin = false
+      this.isRegistration = false
     },
 
     async login(){
@@ -133,15 +143,6 @@ export default {
       this.$emit("changeAuthStatus", false)
     }
   },
-
-  watch:{
-    isLogin(){
-      return this.isLogin
-    },
-    isRegistration(){
-      return this.isRegistration
-    }
-  }
 }
 
 </script>
@@ -154,9 +155,8 @@ export default {
   width: 100%;
   height: 75px;
   //background: linear-gradient(to right top, #ABADDD, #6E7091);
-  //background-image: url("../../img/bg1.png");
+  //background-image: url("../../img/bg1.png"); #FF0101
   background: linear-gradient(to right top, #ABADDD, #5D84E6);
-
   border: 1px solid #90A5E6;
   border-radius: 7px;
 }
@@ -195,31 +195,6 @@ export default {
   margin-right: 20px;
 }
 
-.dialog-window{
-
-  a{
-    width: 100px;
-    padding: .2em 1em;
-    background-color: transparent;
-    border: 1px solid lightskyblue;
-    border-radius: .4em;
-    color: Black;
-    margin-right: .5em;
-    text-decoration: none;
-    font-size: 20px;
-  }
-  .content-input-tasks{
-    display: block;
-  }
-  input{
-    margin: 5px;
-    height: 40px;
-    padding: 1px 10px;
-    textarea{
-      font-size: 10px;
-    }
-  }
-}
 
 
 </style>

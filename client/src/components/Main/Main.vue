@@ -27,7 +27,7 @@ export default {
   },
 
   methods:{
-    abortLocalStorage(){
+    clearLocalStorage(){
       localStorage.clear()
     },
 
@@ -37,14 +37,8 @@ export default {
   },
 
   mounted() {
-    this.abortLocalStorage()
+    this.clearLocalStorage()
   },
-
-  watch:{
-    authorized(){
-      return this.authorized
-    }
-  }
 }
 </script>
 
