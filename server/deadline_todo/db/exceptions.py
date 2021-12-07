@@ -3,9 +3,9 @@ class DBException(Exception):
 
 
 class LoginAlreadyExists(DBException):
-    def __init__(self, email):
+    def __init__(self, login):
         super().__init__(
-            f'User with login \'{email}\' already exists'
+            f'User with login \'{login}\' already exists'
         )
 
 

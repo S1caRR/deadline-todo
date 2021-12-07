@@ -48,7 +48,7 @@ class TaskDatabaseService:
         except NoResultFound as ex:
             raise TaskNotFound(task_id) from ex
 
-    async def add_new_task(self, task_data: TaskModel):
+    async def add_new_task(self, task_data: TaskModel) -> int:
         """
         Create task in DB
         """
@@ -57,6 +57,8 @@ class TaskDatabaseService:
             task = Task(**task_data)
             session.add(task)
             await session.commit()
+
+        return task.id
 
     async def delete_task(self, user_id: int, task_id: int):
         """

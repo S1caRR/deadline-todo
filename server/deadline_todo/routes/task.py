@@ -69,9 +69,9 @@ async def api_new_task(request: web.Request) -> web.Response:
 
         task = TaskModel(user_id=user_id, **data)
 
-        await task_db_service.add_new_task(task)
+        task_id = await task_db_service.add_new_task(task)
 
-        return web.json_response({'message': 'Task was successfully created!'},
+        return web.json_response({'id': task_id},
                                  status=201)
 
     except (JSONDecodeError, ValidationError):
