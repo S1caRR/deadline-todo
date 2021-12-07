@@ -3,7 +3,7 @@ import logging
 from deadline_todo.db.auth import AuthDatabaseService
 import deadline_todo.config as config
 from deadline_todo.db.exceptions import LoginAlreadyExists, UserNotFound
-from deadline_todo.models.user import UserModel
+from deadline_todo.models.pydantic_models import UserModel
 
 from aiohttp import web
 from datetime import datetime, timedelta

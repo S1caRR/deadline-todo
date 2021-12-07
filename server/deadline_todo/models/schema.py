@@ -1,15 +1,24 @@
-import datetime
-
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import DateTime
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Boolean
-from pydantic import BaseModel, Field, constr
-from typing import List
+from sqlalchemy.orm import declarative_base
 
-from deadline_todo.db.db_config import Base
+
+Base = declarative_base()
+
+
+class User(Base):
+    __tablename__ = "user"
+
+    id = Column('id', Integer, primary_key=True)
+    login = Column('login', String(50), unique=True, nullable=False)
+    password = Column('password', String(100), nullable=False)
+
+    def __repr__(self):
+        return f'User(id={self.id}, login={self.login}, password={self.password})'
 
 
 class Task(Base):
@@ -25,20 +34,3 @@ class Task(Base):
     def __repr__(self):
         return f'Task(id={self.id}, name={self.name}, description={self.description}, ' \
                f'deadline={self.deadline}, is_finished={self.is_finished}, user_id={self.user_id})'
-
-
-class TaskModel(BaseModel):
-    id: int = None
-    name: constr(max_length=50) = Field(alias='task_name')
-    description: constr(max_length=300) = Field(None, alias='task_description')
-    deadline: datetime.datetime
-    is_finished: bool = None
-    user_id: int = None
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-
-
-class TaskListModel(BaseModel):
-    tasks: List[TaskModel] = None

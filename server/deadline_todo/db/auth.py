@@ -1,6 +1,7 @@
 from .db_config import engine, async_session
 from .exceptions import LoginAlreadyExists, UserNotFound
-from deadline_todo.models.user import User, UserModel
+from deadline_todo.models.schema import User
+from deadline_todo.models.pydantic_models import UserModel
 
 from sqlalchemy import select, or_
 from sqlalchemy.exc import IntegrityError, NoResultFound

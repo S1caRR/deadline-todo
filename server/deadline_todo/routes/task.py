@@ -3,7 +3,7 @@ import json
 from deadline_todo.middlewares.auth_middleware import jwt_required
 from deadline_todo.db.task import TaskDatabaseService
 from deadline_todo.db.exceptions import TaskNotFound
-from deadline_todo.models.task import TaskModel
+from deadline_todo.models.pydantic_models import TaskModel
 
 from aiohttp import web
 from json import JSONDecodeError
@@ -24,14 +24,14 @@ async def api_tasks(request: web.Request) -> web.Response:
     :return: json object with field 'data' witch contains list[dict[str, any]] of tasks
     """
     user_id = request.user.id
+    is_finished = request.rel_url.query.get('is_finished', '')
+    is_finished = True if (is_finished == 'true') else False
 
-    tasks = await task_db_service.fetch_tasks_list(user_id)
-    tasks = tasks.json(by_alias=True)
+    tasks = await task_db_service.fetch_tasks_list(user_id, is_finished)
 
-    return web.json_response({
-        'data': json.loads(tasks)
-    },
-        status=200)
+    return web.Response(body=tasks.json(exclude={'tasks': {'__all__': {'user_id'}}}, by_alias=True),
+                        content_type='application/json',
+                        status=200)
 
 
 @task_router.get(r'/api/tasks/{task_id:\d+}')
@@ -48,10 +48,10 @@ async def api_get_task(request: web.Request) -> web.Response:
         task_id = int(request.match_info.get('task_id'))
 
         task = await task_db_service.fetch_task(user_id, task_id)
-        task = task.json(exclude={'user_id'}, by_alias=True)
 
-        return web.json_response({'data': json.loads(task)},
-                                 status=200)
+        return web.Response(body=task.json(exclude={'user_id'}, by_alias=True),
+                            content_type='application/json',
+                            status=200)
 
     except TaskNotFound as ex:
         raise web.HTTPBadRequest(text=str(ex))

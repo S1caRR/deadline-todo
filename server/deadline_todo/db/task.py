@@ -1,6 +1,9 @@
+import datetime
+
 from .db_config import engine, async_session
 from .exceptions import TaskNotFound
-from deadline_todo.models.task import Task, TaskModel, TaskListModel
+from deadline_todo.models.schema import Task
+from deadline_todo.models.pydantic_models import TaskModel, TaskListModel
 
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
@@ -11,16 +14,17 @@ class TaskDatabaseService:
         self.engine = engine
         self.async_session = async_session
 
-    async def fetch_tasks_list(self, user_id: int) -> TaskListModel:
+    async def fetch_tasks_list(self, user_id: int, is_finished) -> TaskListModel:
         """
         Fetch all user's task from DB
         """
         async with self.async_session() as session:
             result = await session.execute(
                 select(Task)
-                .filter_by(user_id=user_id)
+                .where(Task.user_id == user_id)
+                .where(Task.is_finished == is_finished)
+                .order_by(Task.deadline)
             )
-            await session.commit()
 
         tasks_list = []
         for task in result.scalars().all():
@@ -28,7 +32,6 @@ class TaskDatabaseService:
             tasks_list.append(task)
 
         tasks_list = TaskListModel(tasks=tasks_list)
-
         return tasks_list
 
     async def fetch_task(self, user_id: int, task_id: int) -> TaskModel:
