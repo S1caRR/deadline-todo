@@ -1,4 +1,4 @@
-import datetime
+from datetime import date, datetime
 
 from .db_config import engine, async_session
 from .exceptions import TaskNotFound
@@ -14,17 +14,23 @@ class TaskDatabaseService:
         self.engine = engine
         self.async_session = async_session
 
-    async def fetch_tasks_list(self, user_id: int, is_finished) -> TaskListModel:
+    async def fetch_tasks_list(self, user_id: int, is_finished=None, by_date=None) -> TaskListModel:
         """
         Fetch all user's task from DB
         """
         async with self.async_session() as session:
-            result = await session.execute(
+            stmt = (
                 select(Task)
                 .where(Task.user_id == user_id)
-                .where(Task.is_finished == is_finished)
                 .order_by(Task.deadline)
             )
+            if is_finished:
+                stmt = stmt.where(Task.is_finished == is_finished)
+            if by_date:
+                stmt = stmt.where(Task.deadline >= datetime.combine(by_date, datetime.min.time()),
+                                  Task.deadline <= datetime.combine(by_date, datetime.max.time()))
+
+            result = await session.execute(stmt)
 
         tasks_list = []
         for task in result.scalars().all():

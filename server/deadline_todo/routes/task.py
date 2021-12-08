@@ -6,6 +6,7 @@ from deadline_todo.db.exceptions import TaskNotFound
 from deadline_todo.models.pydantic_models import TaskModel
 
 from aiohttp import web
+from datetime import date
 from json import JSONDecodeError
 from pydantic import ValidationError
 
@@ -24,10 +25,24 @@ async def api_tasks(request: web.Request) -> web.Response:
     :return: json object with field 'data' witch contains list[dict[str, any]] of tasks
     """
     user_id = request.user.id
-    is_finished = request.rel_url.query.get('is_finished', '')
-    is_finished = True if (is_finished == 'true') else False
 
-    tasks = await task_db_service.fetch_tasks_list(user_id, is_finished)
+    is_finished = request.rel_url.query.get('is_finished')
+    if is_finished:
+        if is_finished == 'true':
+            is_finished = True
+        elif is_finished == 'false':
+            is_finished = False
+        else:
+            raise web.HTTPBadRequest(text='Wrong is_finished parameter value')
+
+    by_date = request.rel_url.query.get('by_date')
+    if by_date:
+        try:
+            by_date = date.fromisoformat(by_date)
+        except ValueError:
+            raise web.HTTPBadRequest(text='Wrong by_date parameter value')
+
+    tasks = await task_db_service.fetch_tasks_list(user_id, is_finished=is_finished, by_date=by_date)
 
     return web.Response(body=tasks.json(exclude={'tasks': {'__all__': {'user_id'}}}, by_alias=True),
                         content_type='application/json',
