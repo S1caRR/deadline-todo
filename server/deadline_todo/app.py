@@ -1,17 +1,19 @@
 from middlewares.auth_middleware import auth_middleware
-from routes.auth import auth_router
+from routes.accounts import auth_router
 from routes.task import task_router
-
-from aiohttp import web
-import aiohttp_cors
-import logging
-
+from db.accessor import Database
 from sheduler.send_tasks import scheduler_run, scheduler_close
 from extsystems.tg_bot import bot_start, bot_shutdown
 
+from aiohttp import web
+import aiohttp_cors
 
-async def init_app() -> web.Application:
+
+def init_app() -> web.Application:
     app = web.Application(middlewares=[auth_middleware])
+
+    app.on_startup.append(Database.connect)
+    app.on_cleanup.append(Database.disconnect)
 
     # Add telegram bot asyncio task
     app.on_startup.append(bot_start)
@@ -32,8 +34,6 @@ async def init_app() -> web.Application:
                                           )})
     for route in app.router.routes():
         cors.add(route)
-
-    logging.basicConfig(filename='errors.log')
 
     return app
 
