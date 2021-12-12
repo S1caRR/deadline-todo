@@ -6,9 +6,6 @@ from aiohttp import web
 import jwt
 
 
-auth_db_service = AuthDatabaseService()
-
-
 async def auth_middleware(app, handler):
     async def middleware(request):
         request.user = None
@@ -17,7 +14,7 @@ async def auth_middleware(app, handler):
             try:
                 payload = jwt.decode(jwt_token, config.JWT_SECRET,
                                      algorithms=[config.JWT_ALGORITHM])
-                request.user = await auth_db_service.fetch_user(user_id=payload['user_id'])
+                request.user = await AuthDatabaseService().fetch_user(user_id=payload['user_id'])
 
             except (jwt.DecodeError, jwt.ExpiredSignatureError):
                 raise web.HTTPUnauthorized(text='Token is invalid')

@@ -8,6 +8,7 @@ from typing import List
 class UserModel(BaseModel):
     id: int = None
     login: constr(max_length=50)
+    tg_id: int = None
     password: constr(max_length=100)
 
     class Config:
