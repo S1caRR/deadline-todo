@@ -1,10 +1,10 @@
 import logging
 
 import deadline_todo.config as config
-from deadline_todo.db.auth import AuthDatabaseService
+from deadline_todo.db.accounts import AuthDatabaseService
 from deadline_todo.middlewares.auth_middleware import jwt_required
 from deadline_todo.db.exceptions import LoginAlreadyExists, UserNotFound
-from deadline_todo.models.pydantic_models import UserModel
+from deadline_todo.models.pydantic_models import UserProfileModel, UserCredentialsModel
 
 from aiohttp import web
 from datetime import datetime, timedelta
@@ -25,7 +25,7 @@ async def register(request: web.Request):
     try:
         data = await request.json()
 
-        user_credentials = UserModel(**data, exclude={'id'})
+        user_credentials = UserCredentialsModel(**data, exclude={'id'})
         user_credentials.password = bcrypt.hashpw(user_credentials.password.encode(), bcrypt.gensalt()).decode()
 
         await AuthDatabaseService().add_new_user(user_credentials)
@@ -51,9 +51,9 @@ async def login(request: web.Request):
     try:
         data = await request.json()
 
-        user_credentials = UserModel(**data)
+        user_credentials = UserCredentialsModel(**data)
 
-        user = await AuthDatabaseService().fetch_user(login=user_credentials.login)
+        user = await AuthDatabaseService.fetch_user_credentials(login=user_credentials.login)
 
         if not bcrypt.checkpw(user_credentials.password.encode(), user.password.encode()):
             raise web.HTTPUnauthorized(text='Wrong credentials')
@@ -84,9 +84,9 @@ async def get_profile(request: web.Request):
     try:
         user_id = request.user.id
 
-        profile_data = await AuthDatabaseService().fetch_user(user_id)
+        profile_data = await AuthDatabaseService.fetch_user_profile(user_id)
 
-        return web.Response(body=profile_data.json(exclude={'password', 'id'}),
+        return web.Response(body=profile_data.json(),
                             content_type='application/json',
                             status=200)
 
@@ -101,9 +101,9 @@ async def update_profile(request: web.Request):
     try:
         data = await request.json()
         user_id = request.user.id
-        new_profile_info = UserModel(**data)
+        new_profile_info = UserProfileModel(**data)
 
-        await AuthDatabaseService().update_profile(user_id, new_profile_info)
+        await AuthDatabaseService.update_profile(user_id, new_profile_info)
 
         return web.Response(text='Profile successfully updated',
                             status=200)
@@ -134,7 +134,7 @@ async def reset_password(request: web.Request):
 
             hashed_password = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
 
-            await AuthDatabaseService().reset_password(user_id, hashed_password)
+            await AuthDatabaseService.reset_password(user_id, hashed_password)
 
         return web.Response(text='Password was successfully reset',
                             status=200)

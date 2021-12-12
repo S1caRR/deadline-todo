@@ -39,7 +39,7 @@ async def api_tasks(request: web.Request) -> web.Response:
         except ValueError:
             raise web.HTTPBadRequest(text='Wrong by_date parameter value')
 
-    tasks = await TaskDatabaseService().fetch_tasks_list(user_id, is_finished=is_finished, by_date=by_date)
+    tasks = await TaskDatabaseService.fetch_tasks_list(user_id, is_finished=is_finished, by_date=by_date)
 
     return web.Response(body=tasks.json(exclude={'tasks': {'__all__': {'user_id'}}}, by_alias=True),
                         content_type='application/json',
@@ -59,7 +59,7 @@ async def api_get_task(request: web.Request) -> web.Response:
         user_id = request.user.id
         task_id = int(request.match_info.get('task_id'))
 
-        task = await TaskDatabaseService().fetch_task(user_id, task_id)
+        task = await TaskDatabaseService.fetch_task(user_id, task_id)
 
         return web.Response(body=task.json(exclude={'user_id'}, by_alias=True),
                             content_type='application/json',
@@ -81,7 +81,7 @@ async def api_new_task(request: web.Request) -> web.Response:
 
         task = TaskModel(user_id=user_id, **data)
 
-        task_id = await TaskDatabaseService().add_new_task(task)
+        task_id = await TaskDatabaseService.add_new_task(task)
 
         return web.json_response({'id': task_id},
                                  status=201)
@@ -100,7 +100,7 @@ async def api_delete_task(request: web.Request) -> web.Response:
         user_id = request.user.id
         task_id = int(request.match_info.get('task_id'))
 
-        await TaskDatabaseService().delete_task(user_id, task_id)
+        await TaskDatabaseService.delete_task(user_id, task_id)
 
         return web.json_response({'id': task_id},
                                  status=200)
@@ -122,7 +122,7 @@ async def api_update_task(request: web.Request) -> web.Response:
         data = await request.json()
         task_data = TaskModel(**data)
 
-        await TaskDatabaseService().update_task(user_id, task_id, task_data)
+        await TaskDatabaseService.update_task(user_id, task_id, task_data)
 
         return web.json_response({'id': task_id},
                                  status=200)

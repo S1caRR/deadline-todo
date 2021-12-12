@@ -1,5 +1,5 @@
 import deadline_todo.config as config
-from deadline_todo.db.auth import AuthDatabaseService
+from deadline_todo.db.accounts import AuthDatabaseService
 from deadline_todo.db.exceptions import UserNotFound
 
 from aiohttp import web
@@ -14,7 +14,7 @@ async def auth_middleware(app, handler):
             try:
                 payload = jwt.decode(jwt_token, config.JWT_SECRET,
                                      algorithms=[config.JWT_ALGORITHM])
-                request.user = await AuthDatabaseService().fetch_user(user_id=payload['user_id'])
+                request.user = await AuthDatabaseService.fetch_user_credentials(user_id=payload['user_id'])
 
             except (jwt.DecodeError, jwt.ExpiredSignatureError):
                 raise web.HTTPUnauthorized(text='Token is invalid')
