@@ -5,11 +5,20 @@ from datetime import datetime
 from typing import List
 
 
-class UserModel(BaseModel):
+class UserCredentialsModel(BaseModel):
     id: int = None
     login: constr(max_length=50)
-    tg_id: int = None
     password: constr(max_length=100)
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+
+
+class UserProfileModel(BaseModel):
+    # avatar, fullname etc will be later
+    login: constr(max_length=50) = None
+    tg_id: int = None
 
     class Config:
         orm_mode = True
