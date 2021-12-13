@@ -29,9 +29,9 @@ class TaskDatabaseService:
                 .where(Task.user_id == user_id)
                 .order_by(Task.deadline)
             )
-            if is_finished:
+            if is_finished is not None:
                 stmt = stmt.where(Task.is_finished == is_finished)
-            if by_date:
+            if by_date is not None:
                 stmt = stmt.where(Task.deadline >= datetime.combine(by_date, datetime.min.time()),
                                   Task.deadline <= datetime.combine(by_date, datetime.max.time()))
 
