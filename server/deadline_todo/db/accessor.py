@@ -26,8 +26,9 @@ class Database:
     async def disconnect(cls, _):
         await cls().close_connection()
 
-    def session(self):
-        return Session(self.engine)
+    @classmethod
+    def session(cls):
+        return Session(cls.engine)
 
 
 class Session:

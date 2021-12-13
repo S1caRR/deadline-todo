@@ -1,5 +1,3 @@
-import logging
-
 import deadline_todo.config as config
 from deadline_todo.db.accounts import AuthDatabaseService
 from deadline_todo.middlewares.auth_middleware import jwt_required
@@ -12,6 +10,7 @@ from json import JSONDecodeError
 from pydantic.error_wrappers import ValidationError
 import bcrypt
 import jwt
+import logging
 
 
 auth_router = web.RouteTableDef()
@@ -21,6 +20,9 @@ auth_router = web.RouteTableDef()
 async def register(request: web.Request):
     """
     Register user method
+
+    :param: request:
+    :raise: web.HTTPBadRequest
     """
     try:
         data = await request.json()
@@ -43,10 +45,13 @@ async def register(request: web.Request):
 @auth_router.post('/api/login')
 async def login(request: web.Request):
     """
-    Login user by email and password
+    User's sign in by login and password
 
-    :param request:
-    :return: json object with field 'token' which contains JWT Authorization token
+    Returns JWT Authorization token
+
+    :param: request:
+    :raise: web.HTTPUnauthorized
+    :raise: web.HTTPBadRequest
     """
     try:
         data = await request.json()
@@ -81,6 +86,14 @@ async def login(request: web.Request):
 @auth_router.get('/api/profile')
 @jwt_required
 async def get_profile(request: web.Request):
+    """
+    JWT Authorization token required!
+
+    Get user profile data
+
+    :param: request:
+    :raise: web.HTTPBadRequest
+    """
     try:
         user_id = request.user.id
 
@@ -98,6 +111,14 @@ async def get_profile(request: web.Request):
 @auth_router.patch('/api/profile')
 @jwt_required
 async def update_profile(request: web.Request):
+    """
+    JWT Authorization token required!
+
+    Update user profile data
+
+    :param: request:
+    :raise: web.HTTPBadRequest
+    """
     try:
         data = await request.json()
         user_id = request.user.id
@@ -120,6 +141,15 @@ async def update_profile(request: web.Request):
 @auth_router.patch('/api/profile/reset_password')
 @jwt_required
 async def reset_password(request: web.Request):
+    """
+    JWT Authorization token required!
+
+    Reset user's password
+
+    :param: request:
+    :raise: web.HTTPUnauthorized
+    :raise: raise web.HTTPBadRequest
+    """
     try:
         data = await request.json()
         user_id = request.user.id

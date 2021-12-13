@@ -16,10 +16,12 @@ task_router = web.RouteTableDef()
 @jwt_required
 async def api_tasks(request: web.Request) -> web.Response:
     """
+    JWT Authorization token required!
+
     Method gets all user's tasks
 
     :param request:
-    :return: json object with field 'data' witch contains list[dict[str, any]] of tasks
+    :raise: web.HTTPBadRequest
     """
     user_id = request.user.id
 
@@ -50,10 +52,12 @@ async def api_tasks(request: web.Request) -> web.Response:
 @jwt_required
 async def api_get_task(request: web.Request) -> web.Response:
     """
-    Method gets task by id
+    JWT Authorization token required!
+
+    Get task by task_id
 
     :param request:
-    :return: json object with field 'data' witch contains task format dict[str, any]
+    :raise: web.HTTPBadRequest
     """
     try:
         user_id = request.user.id
@@ -73,7 +77,12 @@ async def api_get_task(request: web.Request) -> web.Response:
 @jwt_required
 async def api_new_task(request: web.Request) -> web.Response:
     """
-    Method creates task
+    JWT Authorization token required!
+
+    Create task and returns created task's ID
+
+    :param: request:
+    :raise: web.HTTPBadRequest
     """
     try:
         data = await request.json()
@@ -94,7 +103,12 @@ async def api_new_task(request: web.Request) -> web.Response:
 @jwt_required
 async def api_delete_task(request: web.Request) -> web.Response:
     """
-    Method deletes task by id
+    JWT Authorization token required!
+
+    Delete task by id and returns deleted task's id
+
+    :param: request:
+    :raise web.HTTPBadRequest
     """
     try:
         user_id = request.user.id
@@ -113,7 +127,12 @@ async def api_delete_task(request: web.Request) -> web.Response:
 @jwt_required
 async def api_update_task(request: web.Request) -> web.Response:
     """
-    Method updates task by id
+    JWT Authorization token required!
+
+    Update task by id and returns updated task's id
+
+    :param: request:
+    :raise web.HTTPBadRequest
     """
     try:
         user_id = request.user.id

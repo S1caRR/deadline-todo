@@ -53,7 +53,8 @@ class TaskDatabaseService:
         """
         async with Database().session() as session:
             task = await session.execute(
-                select(Task).filter_by(user_id=user_id, id=task_id)
+                select(Task)
+                .where(Task.user_id == user_id, Task.id == task_id)
             )
             await session.commit()
 
@@ -120,11 +121,12 @@ class TaskDatabaseService:
                 .where(Task.deadline >= datetime.combine(date.today(), datetime.min.time()),
                        Task.deadline <= datetime.combine(date.today(), datetime.max.time()))
                 .where(User.tg_id is not None)
-                .where(Task.is_finished == False)
+                .where(Task.is_finished == False)   # 'not Task.is_finished' and 'is False' doesn't work
             )
 
             result = await session.execute(stmt)
 
+        # forming dict format {tg_id: [task1, task2, ...], ...}
         today_tasks = {}
         for row in result:
             tg_id = row.user.tg_id
