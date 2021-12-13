@@ -2,10 +2,14 @@
 
 Fullstack ToDoList приложение, финальный проект TensorSchool_TMN (осень 2021)
 
-## Back-end технологии:
+## Разработали
+Back-end - https://github.com/S1caRR
 
-PostgreSQL
-Python 3.9:
+Front-end - https://github.com/Vootshi
+## Back-end технологии:
+- PostgreSQL
+
+- Python 3.9 REST API server:
   * aiohttp
   * aiogram
   * SQLAlchemy (ORM, asyncpg)
@@ -16,5 +20,5 @@ Python 3.9:
   * bcrypt
 
 ## Front-end технологии:
-Vue
-Vuex
+- Vue
+- Vuex
