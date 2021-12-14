@@ -59,7 +59,8 @@ async def broadcaster() -> int:
             message = 'Ваши задачи на сегодня:'
             for task in tasks:
                 message += f'\n\n<b>{task.get("task_name")}</b>\n' \
-                           f'{task.get("task_desc") if task.get("task_desc") else "Без описания"}'
+                           f'{task.get("task_desc") if task.get("task_desc") else "Без описания"}\n' \
+                           f'Запланировано на {task.get("deadline")}'
 
             if await send_message(user_id, message):
                 count += 1

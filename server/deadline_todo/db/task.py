@@ -115,7 +115,7 @@ class TaskDatabaseService:
             stmt = (
                 select(
                     Bundle('user', User.tg_id),
-                    Bundle('task', Task.name, Task.description)
+                    Bundle('task', Task.name, Task.description, Task.deadline)
                 )
                 .join(Task.user_tasks)
                 .where(Task.deadline >= datetime.combine(date.today(), datetime.min.time()),
@@ -136,7 +136,8 @@ class TaskDatabaseService:
 
             today_tasks[tg_id].append({
                     'task_name': row.task.name,
-                    'task_desc': row.task.description
+                    'task_desc': row.task.description,
+                    'deadline': row.task.deadline.strftime('%H:%M')
                 })
 
         return today_tasks
