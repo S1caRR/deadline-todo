@@ -65,7 +65,6 @@ class AuthDatabaseService:
                 session.add(user)
                 await session.commit()
             except IntegrityError as ex:
-                await session.close()
                 raise LoginAlreadyExists(user.login) from ex
 
     @staticmethod

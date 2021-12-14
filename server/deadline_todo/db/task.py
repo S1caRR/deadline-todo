@@ -53,7 +53,8 @@ class TaskDatabaseService:
         """
         async with Database().session() as session:
             task = await session.execute(
-                select(Task).filter_by(user_id=user_id, id=task_id)
+                select(Task)
+                .where(Task.user_id == user_id, Task.id == task_id)
             )
             await session.commit()
 
@@ -114,17 +115,18 @@ class TaskDatabaseService:
             stmt = (
                 select(
                     Bundle('user', User.tg_id),
-                    Bundle('task', Task.name, Task.description)
+                    Bundle('task', Task.name, Task.description, Task.deadline)
                 )
                 .join(Task.user_tasks)
                 .where(Task.deadline >= datetime.combine(date.today(), datetime.min.time()),
                        Task.deadline <= datetime.combine(date.today(), datetime.max.time()))
                 .where(User.tg_id is not None)
-                .where(Task.is_finished == False)
+                .where(Task.is_finished == False)   # 'not Task.is_finished' and 'is False' doesn't work
             )
 
             result = await session.execute(stmt)
 
+        # forming dict format {tg_id: [task1, task2, ...], ...}
         today_tasks = {}
         for row in result:
             tg_id = row.user.tg_id
@@ -134,7 +136,8 @@ class TaskDatabaseService:
 
             today_tasks[tg_id].append({
                     'task_name': row.task.name,
-                    'task_desc': row.task.description
+                    'task_desc': row.task.description,
+                    'deadline': row.task.deadline.strftime('%H:%M')
                 })
 
         return today_tasks

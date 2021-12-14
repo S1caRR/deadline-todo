@@ -12,6 +12,7 @@ import aiohttp_cors
 def init_app() -> web.Application:
     app = web.Application(middlewares=[auth_middleware])
 
+    # Connect and disconnect DB accessor
     app.on_startup.append(Database.connect)
     app.on_cleanup.append(Database.disconnect)
 

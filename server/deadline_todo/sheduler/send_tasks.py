@@ -9,7 +9,7 @@ async def scheduler():
         aioschedule.every().day.at('7:00').do(broadcaster)
         while True:
             await aioschedule.run_pending()
-            await asyncio.sleep(1)
+            await asyncio.sleep(10)  # sacrificing precision for optimization
     except asyncio.CancelledError:
         pass
 
