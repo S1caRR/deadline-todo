@@ -14,7 +14,8 @@
     "vue": "^3.2.22",
     "vue-router": "^4.0.0-0",
     "vue-spring-calendar": "^0.2.4",
-    "vuex": "^4.0.0-0"
+    "vuex": "^4.0.0-0",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

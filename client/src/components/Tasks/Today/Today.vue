@@ -6,15 +6,16 @@
   </div>
 
   <div class="task-day" >
-    <tasks-day :date="dateList[0]" :responseTasklist="responseTasklist" />
+    <tasklist-day :date="dateList[0]" :responseTasklist="responseTasklist" />
   </div>
 </template>
 
 <script>
-import TasksDay from "../List/TasklistDay";
+import TasklistDay from "../List/TasklistDay";
+import axios from "axios";
 export default {
   name: "Today",
-  components:{ TasksDay},
+  components:{ TasklistDay},
   data(){
     return{
 
@@ -22,13 +23,24 @@ export default {
   },
   props:{
     dateList: {},
-    responseTasklist: {}
+  },
+  computed:{
+    responseTasklist(){
+      return this.$store.getters.getTasklist
+    }
   },
   methods:{
+    refreshResponse(){
+      axios
+          .get('http://localhost:8081/api/tasks', {params:{is_finished: false}})
+          .then( response => {
+            this.$store.commit('changeTasklist', Array.from(response.data.tasks));
+          });
 
+    }
   },
   mounted() {
-    this.$emit('fetchTasks')
+    this.refreshResponse()
   }
 }
 </script>

@@ -1,51 +1,60 @@
 import { createStore } from 'vuex'
 import createPersistedState from "vuex-persistedstate";
+import axios from "axios";
 
 export default createStore({
     state: {
-        isShowDialogHeader: false,
-        isShowDialogCreateTask: false,
         isAuthorized: false,
         token: '',
-        tasklist: []
+        tasklist: [],
+        haveResponse: false,
+        username: '',
+        tgID: ''
     },
     getters:{
-        getIsShowDialogHeader(state){
-            return state.isShowDialogHeader
-        },
-        getIsShowDialogCreateTask(state){
-            return state.isShowDialogCreateTask
-        },
-        getToken(state){
+        getToken: state => {
             return state.token
         },
-        getAuthStatus(state){
+        getAuthStatus: state => {
             return state.isAuthorized
         },
-        getTasklist(state){
+
+        getTasklist: state => {
             return state.tasklist
         },
+        getUsername: state => {
+            return state.username
+        },
+        getTgID: state => {
+            return state.tgID
+        }
     },
     actions:{
-      // toggleDialog(context){
-      //     context.commit('toggleIsShow');
-      // }
+        refreshTasklist(context){
+            axios.defaults.headers.common['Authorization'] = this.state.token
+            axios.get('http://localhost:8081/api/tasks', {params:{is_finished: false}})
+                .then( response => {
+                    context.commit('changeTasklist', Array.from(response.data.tasks));
+                });
+        }
+
     },
     mutations: {
-        toggleIsShowDialogHeader(state){
-            state.isShowDialogHeader = !state.isShowDialogHeader
-        },
-        toggleIsShowDialogCreateTask(state){
-            state.isShowDialogCreateTask = !state.isShowDialogCreateTask
-        },
-        changeToken(state, newToken){
+        changeToken: (state, newToken) => {
             state.token = newToken
+            // axios.defaults.headers.common['Authorization'] = newToken
         },
-        changeAuthStatus(state){
+        changeAuthStatus: state =>{
             state.isAuthorized = !state.isAuthorized
         },
-        changeTasklist(state, newTasklist){
+        changeTasklist: (state, newTasklist) =>{
             state.tasklist = newTasklist
+        },
+        setUsername: (state, newUsername) =>{
+            state.username = newUsername
+        },
+        setTgID: (state, newTgID) =>{
+            state.tgID = newTgID
         },
     },
 

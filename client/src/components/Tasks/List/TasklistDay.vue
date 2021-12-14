@@ -3,33 +3,72 @@
 
 <!--    DayHeader-->
     <div class="date-now-header">
-<!--      {{ date.day }} - {{ date.month }} - {{ date.year }}-->
-      {{dateISO[2]}}.{{dateISO[1]}}.{{dateISO[0]}}
-<!--      <button @click="getMyTasks">GetTasksss</button>-->
+      {{ISODateArray[2]}}.{{ISODateArray[1]}}.{{ISODateArray[0]}}
     </div>
 
 <!--    TaskList-->
-
     <div class="content-tasks-block" >
-      <task-list :taskListProp="taskList"/>
-<!--      <div v-else>Loading......</div>-->
 
-      <dialog-window :isShow="dialogVisible" @hideDialog="toggleDialog">
-        <div class="content-input-tasks" >
+      <task-list :tasklist="tasklist" />
 
-          <input type="text" size="50" placeholder="Название таска"
-                 v-model="newTaskTitle">
-          <input type="text" size="75" placeholder="Описание таска"
-                 v-model="newTaskBody">
-          <a href="#" v-on:click.prevent="addTask">Добавить</a>
-
-        </div>
-      </dialog-window>
-
-      <a href="#" @click.prevent="toggleDialog">Создать</a>
+      <a v-if=" $route.path!=='/archive'"
+          href="#"
+         @click.prevent="isCreatingTask=!isCreatingTask">
+        <i class="far fa-plus-square"></i>
+      </a>
+      <div v-if="isCreatingTask"
+           style="display:block;
+           margin-top: 1em;
+           padding-top: 1em;
+           border-top: 1px solid gray;
+           border-radius: 10px;
+           width: auto;
+           ">
+        <input
+            v-model="newTaskTitle"
+            type="text"
+            placeholder="Название таска"
+            style="
+              width: 85%;
+              margin-left: 1.4em;
+              margin-bottom: 0;
+              font-size: 20px">
+        <textarea
+            v-model="newTaskBody"
+            placeholder="Описание таска"
+            style="resize: none;
+              margin-left: 1.4em;
+              margin-bottom: 0;
+              width: 85%;
+              height: 50px;
+              font-size: 20px;
+              margin-top: 0;">
+        </textarea>
+        <input
+            v-model="newTaskTime"
+            type="time"
+            placeholder="чч:мм"
+            style="
+            color: rebeccapurple;
+            color-adjust: exact;
+              float: right;
+              margin-left: 0;
+              margin-right: 10%;
+              margin-bottom: 0;
+              font-size: 20px;
+              ">
+        <a style="display: block;
+                margin-left: 1em;
+                margin-bottom: .1em;
+                font-size: 25px;
+                height: 30px;
+                width: 30px;"
+                @click="addTask()">
+          <i class="far fa-check-square"></i>
+        </a>
+      </div>
 
     </div>
-
   </div>
 </template>
 
@@ -38,130 +77,91 @@ import TaskList from "./TaskList";
 import DialogWindow from "../../UI/DialogWindow";
 import axios from "axios";
 
-
 export default {
-
-  name: "TasksDay",
+  name: "TasklistDay",
   components:{TaskList, DialogWindow},
-
   data() {
     return{
-      taskList: [],
+      tasklist: [],
       newTaskTitle: "",
       newTaskBody: "",
-      dialogVisible: false,
-      response: {
-        message: ""
-      },
-      dateISO: ""
+      newTaskTime: "",
+      isCreatingTask: false,
+      ISODateArray: []
     }
   },
 
   props: {
     date: { },
-    responseTasklist: { }
+    responseTasklist: {}
   },
 
   methods: {
-    async addTask() {
+    addTask() {
       if (this.newTaskTitle) {
-
-        let isoDate = new Date()
-
-        isoDate.setFullYear(this.date.year)
-        isoDate.setMonth(this.date.month-1)
-        isoDate.setDate(this.date.day)
-
-        isoDate = isoDate.toISOString().split('.')[0]
-
-        const newTask = {
-          task_name: this.newTaskTitle,
-          task_description: this.newTaskBody,
-          deadline: isoDate
-        }
-
         const article = {
           task_name: this.newTaskTitle,
           task_description: this.newTaskBody,
-          deadline: isoDate
+          deadline: this.newTaskTime?
+              `${this.date}T${this.newTaskTime}:${this.getISOTimeNow(new Date()).split(':')[2]}`
+              :`${this.date}T00:00:00`
+              // :`${this.date}T${this.getISOTimeNow(new Date())}`
         };
+        axios
+            .post('http://localhost:8081/api/tasks', article)
+            .then(() => {
+              this.$store.dispatch('refreshTasklist')
+              this.newTaskTitle = ""
+              this.newTaskBody = ""
+              this.isCreatingTask=!this.isCreatingTask
+            });
+          // const response = await axios.post('http://localhost:8081/api/tasks', article)
 
 
-        this.token = localStorage.getItem('token').toString()
-        const headers = {
-          Authorization: this.token
-        }
-
-        try {
-          // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2NDA3MTEyNjF9.YQiVoz3GBnTw7ZT_bNK8api3_sIwHghLWZT__9ob8qM
-          const response = await axios.post('http://localhost:8081/api/tasks', article, {headers})
-          this.response.message = response.data.message
-          alert(this.response.message)
-        } catch (e) {
-          alert('error')
-        }
-
-        this.taskList.push(newTask)
-        this.newTaskTitle = ""
-        this.newTaskBody = ""
-        this.dialogVisible = false
-
-        // this.refreshTasklist()
       }
     },
-
-    toggleDialog() {
-      this.dialogVisible = !this.dialogVisible
-    },
-
     getMyTasks() {
-      this.taskList = this.responseTasklist
-      let isoDate = new Date()
+      this.tasklist = this.responseTasklist
 
-      isoDate.setFullYear(this.date.year)
-      isoDate.setMonth(this.date.month-1)
-      isoDate.setDate(this.date.day)
-
-      isoDate = isoDate.toISOString().split('T')[0]
-      this.taskList = this.taskList.filter( (obj) => {
+      this.tasklist = this.tasklist.filter( (obj) => {
         let isoString = obj.deadline.split('T')[0]
 
-        //`${this.date.year}-${this.date.month}-0${this.date.day}`
-
-        if (isoString === isoDate){
+        if (isoString === this.date){
           return obj
         }
       });
 
     },
-    dateToISOString(){
-      let newDate = new Date()
-      newDate.setFullYear(this.date.year)
-      newDate.setMonth(this.date.month-1)
-      newDate.setDate(this.date.day)
-      this.dateISO = newDate.toISOString().split('T')[0].split('-')
+    getISOTimeNow(){
+      console.log(new Date().toLocaleTimeString());
+      // return new Date().toISOString().split('.')[0].split('T')[1]
+      return new Date().toLocaleTimeString()
+    },
+
+    dateISOtoArray(){
+      this.ISODateArray = this.date.split('-')
     },
 
     refreshTasklist(){
+      this.dateISOtoArray()
       this.getMyTasks()
     }
+  },
+
+  computed:{
 
   },
 
-
-
   created() {
+    // this.tasklist = this.responseTasklist
     this.getMyTasks()
-    this.dateToISOString()
+    this.dateISOtoArray()
   },
 
   watch:{
     responseTasklist(){
       this.refreshTasklist()
     },
-    date(){
-      this.dateToISOString()
-    }
   }
 
 }
@@ -182,34 +182,48 @@ export default {
 .date-now-header{
 
   /*font-family: 'Readex Pro', sans-serif;*/
-  font-family: 'Karla', sans-serif;
-  font-weight: 1000;
+  //font-family: 'Karla', sans-serif;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 400;
   font-size: 19px;
   color: gray;
-  margin-left: .4em;
-  margin-bottom: .3em;
-  margin-top: .3em;
-  margin-right: .4em;
+  margin: .3em .7em;
   //border-bottom: 1px solid teal;
   text-align: end;
 }
 a{
   width: 100px;
-  padding: .2em 1em;
+  padding: 0em .1em;
   background-color: transparent;
-  border: 1px solid lightskyblue;
+  //border: 1px solid lightskyblue;
   border-radius: .4em;
-  color: Black;
+  color: indianred;
   margin-right: .5em;
   text-decoration: none;
   margin-top: 5px;
-  margin-left: 10px;
-  font-size: 17px;
+  margin-left: .5em;
+  font-size: 25px;
   letter-spacing: 1px;
+
+  //margin-right: .5em;
 }
 
 a:hover{
-  background: rgba(173,216,230,0.3);
+  background: rgba(173,216,230,0.6);
 }
+
+//input {
+//  margin: 5px;
+//  height: 40px;
+//  padding: 1px 10px;
+//  border-radius: 5px;
+//  font-family: 'Exo 2', sans-serif;
+//  font-weight: 400;
+//}
+//
+//input[type="text"] {
+//  font-size: 20px;
+//}
+
 
 </style>

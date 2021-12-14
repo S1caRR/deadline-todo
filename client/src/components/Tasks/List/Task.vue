@@ -1,102 +1,142 @@
 <template>
   <div class="task-item">
-    <input type="checkbox"> <span @click="toggleDialog" class="task-item-text">{{task.task_name}}</span>
-    <div class="delete-button">
-      <a href="#" @click="deleteTask(task.id)"><i class="far fa-times-circle"></i></a>
+    <div class="checked" v-if="taskObj.is_finished">
+      <input type="checkbox" checked @click.prevent="taskObj.is_finished = !taskObj.is_finished, updateTask()">
+        <span class="task-item-text">{{taskObj.task_name}}</span>
     </div>
-  </div>
 
-  <dialog-window class="dialog-window"
-                 :isShow="dialogVisible"
-                 @hideDialog="toggleDialog">
-    <div class="content-input-tasks" >
+    <div class="unchecked" v-else>
+      <div v-if="!isUpdating">
+        <input type="checkbox" @click.prevent="taskObj.is_finished = !taskObj.is_finished, updateTask()">
+        <span
+            @click="toggleIsUpdating"
+            class="task-item-text">
+          {{taskObj.task_name}}
+        </span>
+        <span v-if="deadlineTimeHHMM!=='00:00'"
+            @click="toggleIsUpdating"
+            class="task-item-time">
+          {{deadlineTimeHHMM}}
+        </span>
+        <div class="delete-button">
+          <a href="#" @click.prevent="deleteTask()"><i class="far fa-times-circle"></i></a>
+        </div>
+      </div>
 
-      <input v-model="taskObj.task_name" type="text" size="40" placeholder="Название таска">
-      <br>
-      <input v-model="taskObj.task_description" type="text" size="40" placeholder="Описание">
-      <br>
-      <div class="dialog-window-button">
-        <a href="#" @click.prevent="toggleDialog(), updateTask(task.id)">Сохранить</a>
+      <div v-else style="display: block;
+        border-top: 1px solid gray;
+        border-bottom: 1px solid gray;
+        border-radius: 3px;
+        padding: 10px 0 10px 0;
+        width: 100%">
+        <input
+               v-model="taskObj.task_name"
+               type="text"
+               placeholder="Название таска"
+               style="width: 85%; margin-left: 1.4em; margin-bottom: 0; font-size: 20px">
+        <textarea
+            v-model="taskObj.task_description"
+            placeholder="Описание таска"
+            style="resize: none; margin-left: 1.4em; width: 85%;font-size: 20px">
+        </textarea>
+        <input
+            v-model="newDeadlineTime"
+            type="time"
+            placeholder="чч:мм"
+            style="
+              float: right;
+              margin-left: 0;
+              margin-right: 10%;
+              margin-bottom: 0;
+              font-size: 20px;
+              ">
+<!--        <div class="delete-button">-->
+<!--          <a href="#" @click.prevent="deleteTask()"><i class="far fa-times-circle"></i></a>-->
+<!--        </div>-->
+        <a style="display: block;
+                margin-left: 1em;
+                margin-bottom: .1em;
+                font-size: 25px;
+                height: 30px;
+                width: 30px;"
+           @click="updateTask()">
+          <i class="far fa-check-square"></i>
+        </a>
+<!--        <button style="display: block; margin-right: 1em; margin-left: 1.9em; margin-bottom: 10px; font-size: 15px; height: 30px"-->
+<!--                @click="">Save</button>-->
       </div>
 
     </div>
-  </dialog-window>
+
+
+  </div>
+
 </template>
 
 <script>
 import axios from "axios";
-import DialogWindow from "../../UI/DialogWindow";
 
 export default {
-  name: "TaskItem",
-  components: {DialogWindow},
+  name: "Task",
   data(){
     return{
       currentTask: {},
-      dialogVisible: false,
-      token: "",
-      taskObj: this.task
-      //     {
-      //   task_name: this.task.task_name,
-      //   task_description: this.task.task_description,
-      //   deadline: this.task.deadline,
-      //   is_finished: this.task.is_finished
-      // }
+      isUpdating: false,
+      // не (taskObj: this.task) потому что в task есть поле id, а в запрос это поле не передаётся
+      taskObj: {
+        task_name: this.task.task_name,
+        task_description: this.task.task_description,
+        deadline: this.task.deadline,
+        is_finished: this.task.is_finished
+      },
+      // deadlineTimeArray: this.task.deadline.split('T')[1].split(':'),
+      newDeadlineTime: `${this.task.deadline.split('T')[1].split(':')[0]}:${this.task.deadline.split('T')[1].split(':')[1]}`
+      // newDeadlineTime: this.deadlineTimeArray
     }
   },
   props: {
     task: { },
   },
+  computed:{
+    deadlineTimeHHMM(){
+      let arr = this.task.deadline.split('T')[1].split(':')
+      return `${arr[0]}:${arr[1]}`
+    }
+  },
 
   methods:{
-    toggleDialog(){
-      this.dialogVisible = !this.dialogVisible
+    deleteTask(){
+      axios.delete(`http://localhost:8081/api/tasks/${this.task.id}`)
+          .then(() => this.$store.dispatch('refreshTasklist'))
     },
-    async deleteTask(taskId){
+    updateTask(){
+      if (this.taskObj.task_name){
+          let config = {
+            data: this.taskObj
+          }
+          axios.patch(`http://localhost:8081/api/tasks/${this.task.id}`, config.data)
+              .then(() => {
+                this.$store.dispatch('refreshTasklist')
+                this.toggleIsUpdating()
+              }).catch(()=>alert('Введите корректную дату в формате чч:мм'));
 
-      try {
-        this.token = localStorage.getItem("token").toString()
-
-        let config = {
-          headers: {
-            Authorization: this.token
-          },
-        }
-
-
-        const response = await axios.delete(`http://localhost:8081/api/tasks/${taskId}`, config)
-
-        if (response.data.id){
-          alert("Таск успешно удалён")
-          this.$emit('removeTask', this.task)
-        }
-
-
-      } catch (e) {
-        alert('net id')
       }
     },
-    async updateTask(taskId){
-
-      try {
-        this.token = localStorage.getItem("token").toString()
-        let config = {
-          headers: {
-            Authorization: this.token
-          },
-          data: this.taskObj
-        }
-
-        const response = await axios.patch(`http://localhost:8081/api/tasks/${taskId}`, config.data, config)
-        if (response.data.id){
-          alert("Таск успешно обновлён")
-        }
-
-
-      } catch (e) {
-        alert('ошибочка')
-      }
+    toggleIsUpdating(){
+      this.isUpdating=!this.isUpdating
+    }
+  },
+  watch:{
+    task(){
+      this.taskObj = this.task
     },
+    newDeadlineTime(){
+      let deadlineArray = this.taskObj.deadline.split('T')[0]
+      this.taskObj.deadline = `${deadlineArray}T${this.newDeadlineTime}:00`
+    },
+    deadlineTimeHHMM(){
+      this.newDeadlineTime = this.deadlineTimeHHMM
+    }
   }
 
 }
@@ -106,15 +146,41 @@ export default {
 .task-item{
   margin-bottom: 5px;
   margin-left: 10px;
+
   //display: grid;
   //grid-template-columns:0.1fr 6fr 1fr;
   .task-item-text{
-    font-size: 25px;
+    font-size: 22px;
     margin: 3px;
-    font-family: 'Karla', sans-serif;
+    //font-family: 'Karla', sans-serif;
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 400;
   }
   .task-item-text:hover{
     cursor: pointer;
+  }
+  .task-item-time{
+    font-size: 22px;
+    margin: 0px;
+    color: orangered;
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 0px 1px;
+    //font-family: 'Karla', sans-serif;
+    font-weight: 1000;
+  }
+
+  .checked{
+    display: inline;
+
+    .task-item-text{
+      color: lightgrey;
+    }
+
+  }
+  .unchecked{
+    display: inline;
+
   }
   input{
     margin: 3px 2px;
@@ -136,7 +202,6 @@ export default {
       text-decoration: none;
       color: darkred;
       margin-right: 5px;
-
     }
     a:hover{
       background: rgba(255, 0, 0, 0.3);

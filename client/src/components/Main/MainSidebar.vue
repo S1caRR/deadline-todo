@@ -2,17 +2,36 @@
   <section id="sidebar">
 
     <div class="core-block">
-      <a href=""> <i class="fas fa-tasks"></i>Сегодня<span>0</span></a>
-      <a href=""> <i class="fa fa-calendar"></i>Предстоящее<span>0</span></a>
-      <a href=""> <i class="fa fa-calendar-times"></i>Архив<span>0</span></a>
-      <a href=""> <i class="fa fa-calendar-times"></i>Календарь<span>0</span></a>
+<!--      <a href="today"> <i class="fas fa-tasks"></i>Сегодня<span>0</span></a>-->
+<!--      <a href="/upcoming"> <i class="fa fa-calendar"></i>Предстоящее<span>0</span></a>-->
+<!--      <a href="archive"> <i class="fa fa-calendar-times"></i>Архив<span>0</span></a>-->
+<!--      <a href="calendar"> <i class="fa fa-calendar-times"></i>Календарь<span>0</span></a>-->
+      <router-link to="/today">
+        <i class="fas fa-tasks"></i>Сегодня<span>{{ todayCount }}</span>
+      </router-link>
+      <router-link to="/upcoming">
+        <i class="fa fa-calendar"></i>Предстоящее<span>{{ upcomingCount }}</span>
+      </router-link>
+      <router-link to="/archive">
+          <i class="fa fa-calendar-times"></i>Архив<span>0</span>
+      </router-link>
+      <router-link to="/calendar">
+          <i class="fa fa-calendar-times"></i>Календарь<span>0</span>
+      </router-link>
     </div>
   </section>
 </template>
 
 <script>
 export default {
-  name: "MainSidebar"
+  name: "MainSidebar",
+  data(){
+    return{
+      todayCount: 0,
+      upcomingCount: 0,
+      archiveCount: 0
+    }
+  }
 }
 </script>
 
@@ -24,8 +43,9 @@ export default {
   height: 130px;
   //background-color: rgb(191 191 191);
   border: 2px solid #90A5E6;
-  font-size: 20px;
-  border-radius: 10px;
+  min-font-size: 5px;
+  //font-size: 40px;
+  border-radius: 7px;
   position: sticky;
   top: 10px;
   z-index: 0;
