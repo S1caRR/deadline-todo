@@ -7,7 +7,6 @@ export default createStore({
         isAuthorized: false,
         token: '',
         tasklist: [],
-        haveResponse: false,
         username: '',
         tgID: ''
     },
@@ -37,6 +36,7 @@ export default createStore({
                     context.commit('changeTasklist', Array.from(response.data.tasks));
                 });
         },
+        // На всякий случай
         refreshToken(context) {
             axios.defaults.headers.common['Authorization'] = context.state.token
         }

@@ -3,8 +3,7 @@
     <div class="tasks"
          v-for="task in tasklist"
          :key="task.id">
-
-        <task :task="task"/>
+          <task :task="task"/>
     </div>
   </div>
 </template>
@@ -14,25 +13,9 @@ import Task from "./Task"
 export default {
   components: { Task },
 
-  data(){
-    return{
-    }
-  },
-
   props: {
     tasklist:{ }
   },
-
-  methods: {
-
-  },
-
-  created() {
-
-  },
-  watch:{
-
-  }
 
 }
 </script>

@@ -21,7 +21,7 @@ Front-end - https://github.com/Vootshi
 
 ## Front-end технологии:
 - Vue 3
-- Vuex
+- Vuex 4
 - Vuex-persistedstate
 - V-calendar
 - Axios

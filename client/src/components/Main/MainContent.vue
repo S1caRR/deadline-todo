@@ -1,10 +1,7 @@
 <template>
-
   <section id="content">
     <router-view :dateList="getDateList"></router-view>
-
   </section>
-
 </template>
 
 <script>
@@ -14,20 +11,16 @@
 
 export default {
   components:{TasklistMain, Today},
-  data() {
-    return{
-      // dateList: [],
-    }
-  },
   computed:{
-    // getToken(){
-    //   return this.$store.getters.getToken
-    // },
+    // Генератор дат, возвращает список дат в формате yyyy-mm-dd
     getDateList(){
       let dateNow = new Date()
       let dateNowISO = this.toISODate(dateNow)
 
-      let dateAfter = new Date(dateNow.getFullYear()+1, (dateNow.getMonth()-1), dateNow.getDate())
+      let dateAfter = new Date(
+          dateNow.getFullYear()+1,
+          (dateNow.getMonth()-1),
+          dateNow.getDate())
       dateAfter = this.toISODate(dateAfter)
 
       let cObj = genCalendarObj(dateNowISO, dateAfter).date
@@ -40,21 +33,15 @@ export default {
       return datelist
     },
   },
+
   methods:{
+    // Преобразует получаемый параметр типа Date в формат yyyy-mm-dd,
+    // не toISOString потому что Date в таком случае преобразуется без учёта таймзоны
     toISODate(date){
       date = date.toLocaleDateString().split('.')
       return `${date[2]}-${date[1]}-${date[0]}`
     },
   },
-
-  mounted() {
-
-    // axios.defaults.headers.common['Authorization'] = this.getToken
-  },
-
-  watch:{
-
-  }
 }
 </script>
 

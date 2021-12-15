@@ -1,5 +1,4 @@
 <template>
-
   <div>
     <main-header />
     <div>
@@ -23,11 +22,6 @@ export default {
   components: {MainHeader, MainContent, MainSidebar},
   name: "MainContainer",
 
-  data(){
-    return{
-      // authorized: false
-    }
-  },
   computed:{
     getAuthStatus(){
       return this.$store.getters.getAuthStatus
@@ -37,19 +31,9 @@ export default {
     }
   },
 
-  methods:{
-    // changeAuthStatus(status=false){
-    //   this.authorized = status
-    // }
-  },
-
-  mounted() {
-
-  },
   watch:{
     getToken(){
       axios.defaults.headers.common['Authorization'] = this.getToken
-
     }
   }
 }

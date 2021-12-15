@@ -7,7 +7,6 @@
     </div>
 
 <!--    TaskList-->
-
     <div class="content-tasks-block" >
 
       <task-list :tasklist="tasklist" />
@@ -99,19 +98,21 @@ export default {
 
   props: {
     date: { },
-    responseTasklist: {}
+    responseTasklist: { }
   },
 
   methods: {
     addTask() {
       if (this.newTaskTitle) {
+
+        // Формируем таск для передачи
         const article = {
           task_name: this.newTaskTitle,
           task_description: this.newTaskBody,
-          deadline: this.newTaskTime?
-              `${this.date}T${this.newTaskTime}:${this.getISOTimeNow(new Date()).split(':')[2]}`
-              :`${this.date}T00:00:00`
-              // :`${this.date}T${this.getISOTimeNow(new Date())}`
+          deadline: this.newTaskTime? // Если время указано
+              `${this.date}T${this.newTaskTime}:${new Date().toLocaleTimeString().split(':')[2]}` // Отправляем таск с указанным временем
+              :`${this.date}T00:00:00` // Иначе во времени указываем 00:00:00,
+                                       // чтобы он отображался в начале списка тасков, таски с указанной датой будут отображаться под ними
         };
         axios
             .post('http://localhost:8081/api/tasks', article)
@@ -121,29 +122,24 @@ export default {
               this.newTaskBody = ""
               this.isCreatingTask=!this.isCreatingTask
             });
-          // const response = await axios.post('http://localhost:8081/api/tasks', article)
-
-
       }
     },
+
+    // Забираем из списка всех тасков только таски на текущее число
     getMyTasks() {
       this.tasklist = this.responseTasklist
 
       this.tasklist = this.tasklist.filter( (obj) => {
         let isoString = obj.deadline.split('T')[0]
-
         if (isoString === this.date){
           return obj
         }
       });
 
     },
-    getISOTimeNow(){
-      console.log(new Date().toLocaleTimeString());
-      // return new Date().toISOString().split('.')[0].split('T')[1]
-      return new Date().toLocaleTimeString()
-    },
 
+    // Преобразуем полученную дату формата yyyy-mm-dd в массив для отображения в темплэйте
+    // Можно поменять на split('-').join('.')
     dateISOtoArray(){
       this.ISODateArray = this.date.split('-')
     },

@@ -25,7 +25,6 @@ export default {
   components:{ TasklistDay },
   methods:{
     fetchFinishedTasks() {
-
       axios.get('http://localhost:8081/api/tasks', { params: {is_finished: true}})
           .then( response => {
             this.responseFinishedTasklist = Array.from(response.data.tasks)
@@ -36,9 +35,7 @@ export default {
               }
             }
           });
-
     },
-
 
   },
 

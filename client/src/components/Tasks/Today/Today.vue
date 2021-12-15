@@ -16,11 +16,7 @@ import axios from "axios";
 export default {
   name: "Today",
   components:{ TasklistDay},
-  data(){
-    return{
 
-    }
-  },
   props:{
     dateList: {},
   },

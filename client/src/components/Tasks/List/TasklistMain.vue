@@ -23,36 +23,8 @@ export default {
   components: {TasklistDay, Calendar, DatePicker, MyCalendar},
   data(){
     return{
-      localeDate: [],
-      date: new Date(),
       deadlineList: [],
       dateISONoTime: '',
-      attrs: [
-        {
-          // highlight: {
-          //   color: 'red',
-          //   fillMode: 'outline'
-          // },
-          dot: 'red',
-          dates: [],
-          popover: true
-          //     {
-          //   visibility: 'focus',
-          //   hideIndicator: true,
-          // }
-        },
-        {
-          dates: [],
-          popover: true
-        },
-        {
-          dates: new Date(),
-          highlight: {
-            color: 'red',
-            fillMode: 'outline'
-          },
-        }
-      ],
     }
   },
   computed:{
@@ -69,12 +41,10 @@ export default {
            .get('http://localhost:8081/api/tasks', {params:{is_finished: false}})
            .then( response => {
               this.$store.commit('changeTasklist', Array.from(response.data.tasks));
-              // this.$store.dispatch('refreshTasklist')
-              // this.responseTasklist = this.$store.getters.getTasklist;this.responseTasklist = this.$store.getters.getTasklist;
-
            });
     },
 
+    // Поскольку в TasklistDay принимается дата в формате
     getDeadlineISODatesNoTime(){
       for (let taskObject in this.responseTasklist) {
         let dateForListISOList = this.responseTasklist[taskObject].deadline.split('T')[0].split('-')

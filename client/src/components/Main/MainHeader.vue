@@ -22,10 +22,6 @@
 
     </div>
 
-<!--    <dialog-window v-if="$store.getters.getIsShowDialogHeader" class="dialog-window"-->
-<!--                   :isLogin="isLogin"-->
-<!--                   :isRegistration="isRegistration"-->
-<!--                   @hideDialog="hideDialog">-->
       <dialog-window :isShow="isShow" class="dialog-window"
                      :isLogin="isLogin"
                      :isRegistration="isRegistration"
@@ -113,6 +109,7 @@ export default {
       this.isRegistration = false
     },
 
+    //Авторизация
     login(){
       const article = {
         "login": this.loginForCheck.inputLogin,
@@ -129,13 +126,18 @@ export default {
 
     },
 
+    //Регистрация
     register(){
       const article = {
         "login": this.loginForCheck.inputLogin,
         "password": this.loginForCheck.inputPassword
       };
-         axios.post('http://localhost:8081/api/register', article).then().catch(()=>alert('Логин уже зарегистрирован'))
+         axios.post('http://localhost:8081/api/register', article)
+             .then(()=>alert('Вы успешно зарегистрировались'))
+             .catch(()=>alert('Логин уже зарегистрирован'))
     },
+
+    //Взятие данных профиля
     getProfileData(){
       axios
           .get('http://localhost:8081/api/profile')
@@ -144,6 +146,8 @@ export default {
             this.$store.commit('setTgID', response.data.tg_id)
           });
     },
+
+    //Выход из аккаунта
     logout(){
       this.$store.commit('changeAuthStatus')
       this.$store.commit('changeToken', '')
@@ -151,14 +155,6 @@ export default {
       localStorage.clear()
     }
   },
-  watch:{
-    // isShow(){
-    //   this.isShow = this.$store.state.isShow
-    // }
-  },
-  mounted() {
-
-  }
 }
 
 </script>

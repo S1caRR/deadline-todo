@@ -50,9 +50,6 @@
               margin-bottom: 0;
               font-size: 20px;
               ">
-<!--        <div class="delete-button">-->
-<!--          <a href="#" @click.prevent="deleteTask()"><i class="far fa-times-circle"></i></a>-->
-<!--        </div>-->
         <a style="display: block;
                 margin-left: 1em;
                 margin-bottom: .1em;
@@ -62,15 +59,11 @@
            @click="updateTask()">
           <i class="far fa-check-square"></i>
         </a>
-<!--        <button style="display: block; margin-right: 1em; margin-left: 1.9em; margin-bottom: 10px; font-size: 15px; height: 30px"-->
-<!--                @click="">Save</button>-->
       </div>
 
     </div>
 
-
   </div>
-
 </template>
 
 <script>
@@ -89,15 +82,14 @@ export default {
         deadline: this.task.deadline,
         is_finished: this.task.is_finished
       },
-      // deadlineTimeArray: this.task.deadline.split('T')[1].split(':'),
       newDeadlineTime: `${this.task.deadline.split('T')[1].split(':')[0]}:${this.task.deadline.split('T')[1].split(':')[1]}`
-      // newDeadlineTime: this.deadlineTimeArray
     }
   },
   props: {
     task: { },
   },
   computed:{
+    // Возвращает время в формате hh-mm для редактирования таска
     deadlineTimeHHMM(){
       let arr = this.task.deadline.split('T')[1].split(':')
       return `${arr[0]}:${arr[1]}`
@@ -105,10 +97,13 @@ export default {
   },
 
   methods:{
+    // Удаление таска
     deleteTask(){
       axios.delete(`http://localhost:8081/api/tasks/${this.task.id}`)
           .then(() => this.$store.dispatch('refreshTasklist'))
     },
+
+    // Изменение таска
     updateTask(){
       if (this.taskObj.task_name){
           let config = {
@@ -122,6 +117,8 @@ export default {
 
       }
     },
+
+    // Переключатель для темплэйта
     toggleIsUpdating(){
       this.isUpdating=!this.isUpdating
     }
@@ -130,10 +127,13 @@ export default {
     task(){
       this.taskObj = this.task
     },
+
+    // При изменении дедлайна нужно обновить данные для отправки в запросе
     newDeadlineTime(){
       let deadlineArray = this.taskObj.deadline.split('T')[0]
       this.taskObj.deadline = `${deadlineArray}T${this.newDeadlineTime}:00`
     },
+
     deadlineTimeHHMM(){
       this.newDeadlineTime = this.deadlineTimeHHMM
     }

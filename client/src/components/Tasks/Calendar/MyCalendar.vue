@@ -42,9 +42,6 @@ export default {
   props: {
     responseTasklist: {},
     dateList: {}
-    // date: {},
-    // dateISONoTime: {},
-    // responseTasklist: []
   },
   computed: {
     responseTasklist() {
@@ -52,6 +49,7 @@ export default {
     }
   },
   methods: {
+    // Для того, чтоб были отметки в календаре под датами, на которые есть таски
     getDeadlineDates() {
       for (let taskObject in this.responseTasklist) {
         let dateForCalendar = this.responseTasklist[taskObject].deadline.split('T')[0].split('-')
@@ -64,6 +62,7 @@ export default {
       }
     },
 
+    // Для вызова компонента TasklistDay внутри кастомного popover v-calendar
     getDeadlineISODatesNoTime() {
       for (let taskObject in this.responseTasklist) {
         let dateForListISOList = this.responseTasklist[taskObject].deadline.split('T')[0].split('-')
