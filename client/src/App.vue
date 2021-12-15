@@ -6,10 +6,15 @@
 
 <script>
 import MainContainer from "./components/Main/Main";
+import axios from "axios";
+import store from "./store";
 
 export default {
   components: {MainContainer},
   name: "App",
+  mounted() {
+    // axios.defaults.headers.common['Authorization'] = this.$store.getters.getToken
+  }
 }
 </script>
 

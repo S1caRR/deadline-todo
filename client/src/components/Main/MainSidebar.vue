@@ -1,18 +1,35 @@
 <template>
   <section id="sidebar">
-
     <div class="core-block">
-      <a href=""> <i class="fas fa-tasks"></i>Сегодня<span>0</span></a>
-      <a href=""> <i class="fa fa-calendar"></i>Предстоящее<span>0</span></a>
-      <a href=""> <i class="fa fa-calendar-times"></i>Архив<span>0</span></a>
-      <a href=""> <i class="fa fa-calendar-times"></i>Календарь<span>0</span></a>
+      <router-link to="/today">
+        <i class="fas fa-tasks"></i>Сегодня<span>{{ todayCount }}</span>
+      </router-link>
+
+      <router-link to="/upcoming">
+        <i class="fa fa-calendar"></i>Предстоящее<span>{{ upcomingCount }}</span>
+      </router-link>
+
+      <router-link to="/archive">
+          <i class="fa fa-calendar-times"></i>Архив<span>0</span>
+      </router-link>
+
+      <router-link to="/expired">
+          <i class="fa fa-calendar-times"></i>Просроченное<span>0</span>
+      </router-link>
     </div>
   </section>
 </template>
 
 <script>
 export default {
-  name: "MainSidebar"
+  name: "MainSidebar",
+  data(){
+    return{
+      todayCount: 0,
+      upcomingCount: 0,
+      archiveCount: 0
+    }
+  }
 }
 </script>
 
@@ -24,14 +41,15 @@ export default {
   height: 130px;
   //background-color: rgb(191 191 191);
   border: 2px solid #90A5E6;
-  font-size: 20px;
-  border-radius: 10px;
+  min-font-size: 5px;
+  //font-size: 40px;
+  border-radius: 7px;
   position: sticky;
   top: 10px;
   z-index: 0;
   background: linear-gradient(to right top,  #90A5E6, #ABADDD);
   //height: 90%;
-  //width: 15%;
+  width: auto;
   //background: black;
   //position: fixed;
   text-align: left;
@@ -50,6 +68,7 @@ export default {
       color: white;
       text-decoration: none;
       letter-spacing: 1px;
+      font-size: 1em;
     }
     a:last-child {
       margin-bottom: .5em;

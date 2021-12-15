@@ -1,93 +1,73 @@
 <template>
   <div class="content-header">
     <div class="content-header-block-date">
-      <h2>Список задач на месяц</h2>
-      <!--        <button @click="fetchTasks">GetTasks</button>-->
+      <h2>Предстоящее</h2>
     </div>
-    <DatePicker v-model="this.date" title-position="left" :min-date="new Date()" :attributes="attrs" is-expanded>
-      <template v-if="this.dateISONoTime && this.date" #day-popover="{ day }" >
-<!--        <div v-if="this.dateISONoTime && this.date" class="text-xs text-gray-300 font-semibold text-center">-->
-          <tasklist-day-info v-if="this.dateISONoTime && this.date" :date="this.dateISONoTime" :responseTasklist="responseTasklist" />
-          <div v-else></div>
-<!--        </div>-->
-      </template>
 
-    </DatePicker>
-
-<!--    <DatePicker v-model="date" />-->
+    <my-calendar :dateList="dateList" :responseTasklist="responseTasklist" />
   </div>
 
-  <div class="task-day" v-for="dayDate in dateList" :key="dayDate" >
-    <tasks-day :date="dayDate" :responseTasklist="responseTasklist" />
+  <div class="task-day" v-for="dayDate in deadlineList" :key="dayDate.id" >
+    <tasklist-day :date="dayDate" :responseTasklist="responseTasklist" />
   </div>
 </template>
 
 <script>
 import { Calendar, DatePicker } from 'v-calendar';
-import TasksDay from "./TasklistDay";
-import TasklistDayInfo from "./TasklistDayInfo";
+import TasklistDay from "./TasklistDay";
+import axios from "axios";
+import MyCalendar from "../Calendar/MyCalendar";
 
 export default {
   name: "TasklistMain",
-  components: {TasksDay, Calendar, DatePicker, TasklistDayInfo},
+  components: {TasklistDay, Calendar, DatePicker, MyCalendar},
   data(){
     return{
-      localeDate: [],
-      date: new Date(),
+      deadlineList: [],
       dateISONoTime: '',
-      dateObjList: [],
-      taskList: [],
-      attrs: [
-        {
-          // highlight: {
-          //   color: 'red',
-          //   fillMode: 'outline'
-          // },
-          dot: 'red',
-          dates: [],
-          popover: true
-          //     {
-          //   visibility: 'focus',
-          //   hideIndicator: true,
-          // }
-        },
-      ],
+    }
+  },
+  computed:{
+    responseTasklist(){
+      return this.$store.getters.getTasklist
     }
   },
   props:{
     dateList: {},
-    responseTasklist: { }
   },
   methods:{
+     getUnfinishedTasklist(){
+       axios
+           .get('http://localhost:8081/api/tasks', {params:{is_finished: false}})
+           .then( response => {
+              this.$store.commit('changeTasklist', Array.from(response.data.tasks));
+           });
+    },
 
-
-  },
-  mounted() {
-    this.$emit('onFetchTasks')
-    this.getDeadlines
-    this.attrs.dates = this.dateObjList
-  },
-  computed:{
-    getDeadlines(){
-      for (let taskObject in this.responseTasklist){
-        let dateForCalendar = this.responseTasklist[taskObject].deadline.split('T')[0].split('-')
-        dateForCalendar = new Date(dateForCalendar[0],Number(dateForCalendar[1])-1,dateForCalendar[2])
-        if (dateForCalendar.getTime()>=(new Date()).getTime() ){
-          this.attrs[0].dates.push(dateForCalendar)
+    // Поскольку в TasklistDay принимается дата в формате
+    getDeadlineISODatesNoTime(){
+      for (let taskObject in this.responseTasklist) {
+        let dateForListISOList = this.responseTasklist[taskObject].deadline.split('T')[0].split('-')
+        let dateForList = new Date(Number(dateForListISOList[0]),
+            Number(dateForListISOList[1])-1,
+            Number(dateForListISOList[2]),
+            23,59,59)
+        if (this.deadlineList.indexOf(dateForListISOList.join('-'))===-1 && dateForList.getTime()>=(new Date()).getTime()){
+          this.deadlineList.push(dateForListISOList.join('-'))
         }
-
       }
     },
+    
   },
+
+  mounted() {
+    this.getUnfinishedTasklist()
+
+  },
+
   watch:{
     responseTasklist(){
-      this.getDeadlines
-    },
-    date(){
-      if (this.date){
-        this.localeDate = this.date.toLocaleString().split(',')[0].split('.')
-        this.dateISONoTime = `${this.localeDate[2]}-${this.localeDate[1]}-${this.localeDate[0]}`
-      }
+      this.getDeadlineISODatesNoTime();
     }
   },
 }

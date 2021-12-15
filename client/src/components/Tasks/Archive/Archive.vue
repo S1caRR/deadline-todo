@@ -6,13 +6,13 @@
   </div>
 
   <div class="task-day" v-for="dayDate in dateList" :key="dayDate" >
-    <tasks-day :date="dayDate" :responseTasklist="responseFinishedTasklist" />
+    <tasklist-day :date="dayDate" :responseTasklist="responseFinishedTasklist" />
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import TasksDay from "../List/TasklistDay";
+import TasklistDay from "../List/TasklistDay";
 
 export default {
   name: "Archive",
@@ -22,43 +22,20 @@ export default {
       dateList: []
     }
   },
-  components:{ TasksDay },
+  components:{ TasklistDay },
   methods:{
-    async fetchFinishedTasks() {
-      this.token = localStorage.getItem("token").toString()
-
-      const config = {
-        headers: {
-          Authorization: this.token
-        },
-        params: {
-          is_finished: true
-        }
-      }
-
-      try {
-        // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjpudWxsLCJleHAiOjE2NDA3OTIxNDh9.gK_0QsVkXhwlAiFrJusYv_nu8RiCmIFkBJd6GGy7EWY
-
-        let response = await axios.get('http://localhost:8081/api/tasks', config)
-        this.responseFinishedTasklist = Array.from(response.data.tasks)
-
-      } catch (e) {
-        alert(e.message)
-      }
-
-      for (let taskObject in this.responseFinishedTasklist){
-        let dateForCalendar = this.responseFinishedTasklist[taskObject].deadline.split('T')[0]
-        if (this.dateList.indexOf(dateForCalendar) === -1){
-          this.dateList.push(dateForCalendar)
-        }
-
-      }
-
-      // axios
-      //     .get('https://api.coindesk.com/v1/bpi/currentprice.json')
-      //     .then(response => (this.info = response));
+    fetchFinishedTasks() {
+      axios.get('http://localhost:8081/api/tasks', { params: {is_finished: true}})
+          .then( response => {
+            this.responseFinishedTasklist = Array.from(response.data.tasks)
+            for (let taskObject in this.responseFinishedTasklist){
+              let dateForList = this.responseFinishedTasklist[taskObject].deadline.split('T')[0]
+              if (this.dateList.indexOf(dateForList) === -1){
+                this.dateList.push(dateForList)
+              }
+            }
+          });
     },
-
 
   },
 
@@ -69,5 +46,20 @@ export default {
 </script>
 
 <style scoped>
+.content-header-block-date {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.content-header {
+   width: 95%;
+   margin: 0 auto;
+   display: block;
+ //justify-content: space-between;
+   align-items: center;
+   border-bottom: 2px solid cadetblue;
 
+ }
 </style>

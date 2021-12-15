@@ -1,10 +1,11 @@
 <template>
   <div>
-    <main-header :authorized="authorized" @changeAuthStatus="changeAuthStatus" />
+    <main-header />
     <div>
       <div class="main">
         <main-sidebar/>
-        <main-content v-if="authorized" />
+        <main-content v-if="getAuthStatus && getToken" />
+        <div v-else><h1>Необходимо авторизоваться</h1></div>
       </div>
     </div>
   </div>
@@ -14,31 +15,27 @@
 import MainHeader from "./MainHeader";
 import MainSidebar from "./MainSidebar";
 import MainContent from "./MainContent";
+import axios from "axios";
 
 
 export default {
   components: {MainHeader, MainContent, MainSidebar},
   name: "MainContainer",
 
-  data(){
-    return{
-      authorized: false
-    }
-  },
-
-  methods:{
-    clearLocalStorage(){
-      localStorage.clear()
+  computed:{
+    getAuthStatus(){
+      return this.$store.getters.getAuthStatus
     },
-
-    changeAuthStatus(status=false){
-      this.authorized = status
+    getToken(){
+      return this.$store.getters.getToken
     }
   },
 
-  mounted() {
-    this.clearLocalStorage()
-  },
+  watch:{
+    getToken(){
+      axios.defaults.headers.common['Authorization'] = this.getToken
+    }
+  }
 }
 </script>
 

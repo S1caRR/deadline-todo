@@ -1,28 +1,17 @@
 <template>
-  <div class="dialog" v-if="isShow" @mousedown.prevent="hideDialog" >
+  <div class="dialog" v-if="isShow" @mousedown.prevent="$emit('hideDialog')" >
     <div class="dialog-content" @mousedown.stop>
       <slot></slot>
     </div>
   </div>
-  <div v-else>
-
-  </div>
 </template>
 
 <script>
+import toggleDialogWindowMixin from "../Mixins/toggleDialogWindowMixin";
+
 export default {
   name: "DialogWindow",
-  props:{
-    isShow:{
-      type: Boolean,
-      default: false
-    },
-  },
-  methods:{
-    hideDialog() {
-      this.$emit('hideDialog')
-    }
-  }
+  mixins: [toggleDialogWindowMixin]
 }
 </script>
 
@@ -37,6 +26,7 @@ export default {
   position: fixed;
   display: flex;
   z-index: 1;
+
 }
 
 .dialog-content{
@@ -46,6 +36,7 @@ export default {
   padding: 20px;
 }
 .dialog-window {
+  font-family: 'Play', sans-serif;
   .dialog-window-button {
     text-align: end;
     margin: .5em .3em;
@@ -79,6 +70,8 @@ export default {
     height: 40px;
     padding: 1px 10px;
     border-radius: 5px;
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 400;
   }
 
   input[type="text"] {
