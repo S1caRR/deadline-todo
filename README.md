@@ -20,5 +20,8 @@ Front-end - https://github.com/Vootshi
   * bcrypt
 
 ## Front-end технологии:
-- Vue
+- Vue 3
 - Vuex
+- Vuex-persistedstate
+- V-calendar
+- Axios

@@ -15,8 +15,8 @@
       <router-link to="/archive">
           <i class="fa fa-calendar-times"></i>Архив<span>0</span>
       </router-link>
-      <router-link to="/calendar">
-          <i class="fa fa-calendar-times"></i>Календарь<span>0</span>
+      <router-link to="/expired">
+          <i class="fa fa-calendar-times"></i>Просроченное<span>0</span>
       </router-link>
     </div>
   </section>
@@ -51,7 +51,7 @@ export default {
   z-index: 0;
   background: linear-gradient(to right top,  #90A5E6, #ABADDD);
   //height: 90%;
-  //width: 15%;
+  width: auto;
   //background: black;
   //position: fixed;
   text-align: left;
@@ -70,6 +70,7 @@ export default {
       color: white;
       text-decoration: none;
       letter-spacing: 1px;
+      font-size: 1em;
     }
     a:last-child {
       margin-bottom: .5em;

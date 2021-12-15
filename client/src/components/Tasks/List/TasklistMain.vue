@@ -2,23 +2,14 @@
   <div class="content-header">
     <div class="content-header-block-date">
       <h2>Предстоящее</h2>
-      <!--        <button @click="fetchTasks">GetTasks</button>-->
     </div>
-<!--    <DatePicker v-model=date title-position="left" :min-date="new Date()" :attributes="attrs" is-expanded updateLayot>-->
-<!--      <template #day-popover="{ }">-->
-<!--          <tasks-day v-if="this.dateISONoTime" :date="this.dateISONoTime"-->
-<!--                     :responseTasklist="responseTasklist "-->
-<!--                             style="" />-->
-<!--&lt;!&ndash;          <div v-else></div>&ndash;&gt;-->
-<!--      </template>-->
-<!--    </DatePicker>-->
 
-  <my-calendar :dateList="dateList" :responseTasklist="responseTasklist" />
+    <my-calendar :dateList="dateList" :responseTasklist="responseTasklist" />
   </div>
 
-    <div class="task-day" v-for="dayDate in deadlineList" :key="dayDate.id" >
-      <tasklist-day :date="dayDate" :responseTasklist="responseTasklist" />
-    </div>
+  <div class="task-day" v-for="dayDate in deadlineList" :key="dayDate.id" >
+    <tasklist-day :date="dayDate" :responseTasklist="responseTasklist" />
+  </div>
 </template>
 
 <script>
@@ -83,17 +74,6 @@ export default {
 
            });
     },
-    // getDeadlineDates(){
-    //   for (let taskObject in this.responseTasklist){
-    //     let dateForCalendar = this.responseTasklist[taskObject].deadline.split('T')[0].split('-')
-    //     dateForCalendar = new Date(Number(dateForCalendar[0]),Number(dateForCalendar[1])-1,Number(dateForCalendar[2]),23,59,59)
-    //     // dateForCalendar.setTime()
-    //     if (dateForCalendar.getTime()>=(new Date()).getTime()){
-    //       if ((this.attrs[0].dates.indexOf(dateForCalendar)===-1))
-    //         this.attrs[0].dates.push(dateForCalendar)
-    //     }
-    //   }
-    // },
 
     getDeadlineISODatesNoTime(){
       for (let taskObject in this.responseTasklist) {
@@ -107,29 +87,16 @@ export default {
         }
       }
     },
-
-    // toISODate(date){
-    //   date = date.toLocaleDateString().split('.')
-    //   return `${date[2]}-${date[1]}-${date[0]}`
-    // }
-
+    
   },
 
   mounted() {
     this.getUnfinishedTasklist()
-    // this.attrs[1].dates = this.dateList
-    // this.getDeadlineDates()
+
   },
 
   watch:{
-    // date(){
-    //   if (this.date){
-    //     this.localeDate = this.date.toLocaleString().split(',')[0].split('.')
-    //     this.dateISONoTime = `${this.localeDate[2]}-${this.localeDate[1]}-${this.localeDate[0]}`
-    //   }
-    // },
     responseTasklist(){
-      // this.getDeadlineDates();
       this.getDeadlineISODatesNoTime();
     }
   },

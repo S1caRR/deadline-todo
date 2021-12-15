@@ -15,8 +15,7 @@
         <div v-else class="menu" style="
               color: white;
               font-size: 20px" >
-          <span class="headerLogin">{{getUsername}}</span>
-          <header-profile :username="getUsername" :tgID="getTgID"/>
+          <span class="headerLogin" @click.prevent="$router.push({path: '/profile', component: Profile})">{{getUsername}}</span>
           <a href="" @click.prevent="logout">Выход</a>
         </div>
       </div>
@@ -55,11 +54,12 @@
 import DialogWindow from "../UI/DialogWindow";
 import axios from "axios";
 import store from "../../store";
-import HeaderProfile from "../Profile/HeaderProfile";
+import {createRouter} from "vue-router";
+import Profile from "../Profile/Profile";
 
 export default {
   name: "MainHeader",
-  components:{HeaderProfile, DialogWindow},
+  components:{Profile, DialogWindow},
 
   data(){
     return{
@@ -89,9 +89,6 @@ export default {
     },
     getAuthStatus(){
       return this.$store.getters.getAuthStatus
-    },
-    getTgID(){
-      return this.$store.getters.getTgID
     },
     getUsername(){
       return this.$store.getters.getUsername
@@ -145,10 +142,6 @@ export default {
           .then( response => {
             this.$store.commit('setUsername', response.data.login)
             this.$store.commit('setTgID', response.data.tg_id)
-            // this.$store.commit('changeTasklist', Array.from(response.data.tasks));
-            // this.$store.dispatch('refreshTasklist')
-            // this.responseTasklist = this.$store.getters.getTasklist;this.responseTasklist = this.$store.getters.getTasklist;
-
           });
     },
     logout(){
@@ -216,6 +209,7 @@ export default {
 }
 
 .headerLogin{
+  cursor: pointer;
   margin-right: 20px;
   letter-spacing: 1.5px;
 }

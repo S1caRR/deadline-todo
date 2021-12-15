@@ -30,12 +30,15 @@ export default createStore({
         }
     },
     actions:{
-        refreshTasklist(context){
+        refreshTasklist(context) {
             axios.defaults.headers.common['Authorization'] = this.state.token
             axios.get('http://localhost:8081/api/tasks', {params:{is_finished: false}})
                 .then( response => {
                     context.commit('changeTasklist', Array.from(response.data.tasks));
                 });
+        },
+        refreshToken(context) {
+            axios.defaults.headers.common['Authorization'] = context.state.token
         }
 
     },
@@ -57,7 +60,5 @@ export default createStore({
             state.tgID = newTgID
         },
     },
-
-
     plugins: [createPersistedState()]
 })

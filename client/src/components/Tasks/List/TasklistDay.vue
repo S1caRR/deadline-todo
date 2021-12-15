@@ -7,6 +7,7 @@
     </div>
 
 <!--    TaskList-->
+
     <div class="content-tasks-block" >
 
       <task-list :tasklist="tasklist" />
@@ -16,59 +17,64 @@
          @click.prevent="isCreatingTask=!isCreatingTask">
         <i class="far fa-plus-square"></i>
       </a>
-      <div v-if="isCreatingTask"
-           style="display:block;
-           margin-top: 1em;
-           padding-top: 1em;
-           border-top: 1px solid gray;
-           border-radius: 10px;
-           width: auto;
-           ">
-        <input
-            v-model="newTaskTitle"
-            type="text"
-            placeholder="Название таска"
-            style="
-              width: 85%;
-              margin-left: 1.4em;
-              margin-bottom: 0;
-              font-size: 20px">
-        <textarea
-            v-model="newTaskBody"
-            placeholder="Описание таска"
-            style="resize: none;
-              margin-left: 1.4em;
-              margin-bottom: 0;
-              width: 85%;
-              height: 50px;
-              font-size: 20px;
-              margin-top: 0;">
-        </textarea>
-        <input
-            v-model="newTaskTime"
-            type="time"
-            placeholder="чч:мм"
-            style="
-            color: rebeccapurple;
-            color-adjust: exact;
-              float: right;
-              margin-left: 0;
-              margin-right: 10%;
-              margin-bottom: 0;
-              font-size: 20px;
-              ">
-        <a style="display: block;
-                margin-left: 1em;
-                margin-bottom: .1em;
-                font-size: 25px;
-                height: 30px;
-                width: 30px;"
-                @click="addTask()">
-          <i class="far fa-check-square"></i>
-        </a>
-      </div>
 
+      <transition name="fade">
+        <div v-if="isCreatingTask"
+             style="display:block;
+             margin-top: 1em;
+             padding-top: 1em;
+             border-top: 1px solid gray;
+             border-radius: 10px;
+             width: auto;
+             ">
+
+          <input
+              v-model="newTaskTitle"
+              type="text"
+              placeholder="Название таска"
+              style="
+                width: 85%;
+                margin-left: 1.4em;
+                margin-bottom: 0;
+                font-size: 20px">
+          <textarea
+              v-model="newTaskBody"
+              placeholder="Описание таска"
+              style="resize: none;
+                margin-left: 1.4em;
+                margin-bottom: 0;
+                width: 85%;
+                height: 50px;
+                font-size: 20px;
+                margin-top: 0;">
+          </textarea>
+          <input
+              v-model="newTaskTime"
+              type="time"
+              placeholder="чч:мм"
+              style="
+              color: rebeccapurple;
+              color-adjust: exact;
+                float: right;
+                margin-left: 0;
+                margin-right: 10%;
+                margin-bottom: 0;
+                font-size: 20px;
+                ">
+
+          <a style="display: block;
+                  margin-left: 1em;
+                  margin-bottom: .1em;
+                  font-size: 25px;
+                  height: 30px;
+                  width: 30px;"
+                  @click="addTask()">
+            <i class="far fa-check-square"></i>
+          </a>
+        </div>
+      </transition>
     </div>
+
   </div>
 </template>
 
@@ -212,6 +218,12 @@ a:hover{
   background: rgba(173,216,230,0.6);
 }
 
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+  opacity: 0;
+}
 //input {
 //  margin: 5px;
 //  height: 40px;
