@@ -8,13 +8,6 @@ from sqlalchemy.exc import IntegrityError, NoResultFound
 
 
 class AuthDatabaseService:
-    INSTANCE = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls.INSTANCE:
-            cls.INSTANCE = super().__new__(cls, *args, **kwargs)
-        return cls.INSTANCE
-
     @staticmethod
     async def fetch_user_credentials(user_id=None, login=None) -> UserCredentialsModel:
         """

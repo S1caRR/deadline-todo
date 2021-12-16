@@ -11,13 +11,6 @@ from sqlalchemy.exc import NoResultFound
 
 
 class TaskDatabaseService:
-    INSTANCE = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls.INSTANCE:
-            cls.INSTANCE = super().__new__(cls, *args, **kwargs)
-        return cls.INSTANCE
-
     @staticmethod
     async def fetch_tasks_list(user_id: int, is_finished=None, by_date=None) -> TaskListModel:
         """
