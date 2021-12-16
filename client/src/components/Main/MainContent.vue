@@ -8,9 +8,10 @@
  import {genCalendarObj} from "calendar-generator";
  import Today from "../Tasks/Today/Today";
  import TasklistMain from "../Tasks/List/TasklistMain";
+ import Expired from "../Tasks/Expired/Expired";
 
 export default {
-  components:{TasklistMain, Today},
+  components:{TasklistMain, Today, Expired},
   computed:{
     // Генератор дат, возвращает список дат в формате yyyy-mm-dd
     getDateList(){

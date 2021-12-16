@@ -1,11 +1,9 @@
 <template>
-  <div class="task-list-container">
-    <div class="tasks"
+    <div class="tasklist"
          v-for="task in tasklist"
          :key="task.id">
           <task :task="task"/>
     </div>
-  </div>
 </template>
 
 <script>
@@ -21,7 +19,7 @@ export default {
 </script>
 
 <style scoped>
-.tasks{
+.tasklist{
   margin-bottom: 10px;
 }
 </style>

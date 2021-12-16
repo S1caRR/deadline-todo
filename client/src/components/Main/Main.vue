@@ -5,7 +5,7 @@
       <div class="main">
         <main-sidebar/>
         <main-content v-if="getAuthStatus && getToken" />
-        <div v-else><h1>Необходимо авторизоваться</h1></div>
+        <div v-else class="need-to-auth-text">Для продолжения необходимо авторизоваться</div>
       </div>
     </div>
   </div>
@@ -45,7 +45,12 @@ export default {
   display: grid;
   grid-template-columns:2fr 5fr;
   //height: 1080px;
-
+}
+.need-to-auth-text{
+  width: 80%;
+  color: orange;
+  font-size: 30px;
+  border: 2px solid #ABADDD;
 }
 
 /*#nav {*/

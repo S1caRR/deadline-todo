@@ -16,29 +16,42 @@ import TasklistDay from "../List/TasklistDay";
 
 export default {
   name: "Archive",
+  components:{ TasklistDay },
   data(){
     return{
-      responseFinishedTasklist: [],
+      // responseFinishedTasklist: [],
       dateList: []
     }
   },
-  components:{ TasklistDay },
+
+  computed:{
+    responseFinishedTasklist(){
+      return this.$store.getters.getFinishedTasklist
+    }
+  },
+
   methods:{
     fetchFinishedTasks() {
       axios.get('http://localhost:8081/api/tasks', { params: {is_finished: true}})
           .then( response => {
-            this.responseFinishedTasklist = Array.from(response.data.tasks)
-            for (let taskObject in this.responseFinishedTasklist){
-              let dateForList = this.responseFinishedTasklist[taskObject].deadline.split('T')[0]
+            let responseFinishedTasklist = Array.from(response.data.tasks)
+            for (let taskObject in responseFinishedTasklist){
+              let dateForList = responseFinishedTasklist[taskObject].deadline.split('T')[0]
               if (this.dateList.indexOf(dateForList) === -1){
                 this.dateList.push(dateForList)
               }
             }
+            this.$store.commit('changeFinishedTasklist', responseFinishedTasklist)
           });
     },
 
   },
 
+  watch:{
+    responseFinishedTasklist(){
+
+    }
+  },
   mounted() {
     this.fetchFinishedTasks()
   }

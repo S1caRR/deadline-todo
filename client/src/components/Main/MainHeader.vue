@@ -1,5 +1,6 @@
 <template>
   <header id="header">
+
     <div class="header">
       <div class="top-nav">
         <div class="logo">
@@ -7,6 +8,7 @@
         </div>
 
         <div class="menu" v-if="!getAuthStatus">
+
           <a href="" @click.prevent="showDialog('Login')">Вход</a>
           <a href="" @click.prevent="showDialog('Registration')">Регистрация</a>
         </div>
@@ -35,6 +37,7 @@
         <input v-model="loginForCheck.inputPassword" type="text" size="30" placeholder="Пароль">
         <br>
         <div class="dialog-window-button">
+
           <a href="#" v-if="isLogin" @click="login(), hideDialog()">Войти</a>
 <!--          , hideDialog()-->
           <a href="#" v-else-if="isRegistration" @click="register(), hideDialog()">Зарегистрироваться</a>
@@ -52,6 +55,7 @@ import axios from "axios";
 import store from "../../store";
 import {createRouter} from "vue-router";
 import Profile from "../Profile/Profile";
+import { NButton } from 'naive-ui'
 
 export default {
   name: "MainHeader",

@@ -1,66 +1,61 @@
 <template>
   <div class="task-item">
+
     <div class="checked" v-if="taskObj.is_finished">
       <input type="checkbox" checked @click.prevent="taskObj.is_finished = !taskObj.is_finished, updateTask()">
         <span class="task-item-text">{{taskObj.task_name}}</span>
+      <div class="delete-button">
+        <transition name="bounce">
+        <a href="#" @click.prevent="deleteTask()"><i class="far fa-times-circle"></i></a>
+        </transition>
+      </div>
     </div>
 
-    <div class="unchecked" v-else>
-      <div v-if="!isUpdating">
-        <input type="checkbox" @click.prevent="taskObj.is_finished = !taskObj.is_finished, updateTask()">
-        <span
-            @click="toggleIsUpdating"
-            class="task-item-text">
-          {{taskObj.task_name}}
-        </span>
-        <span v-if="deadlineTimeHHMM!=='00:00'"
-            @click="toggleIsUpdating"
-            class="task-item-time">
-          {{deadlineTimeHHMM}}
-        </span>
-        <div class="delete-button">
-          <a href="#" @click.prevent="deleteTask()"><i class="far fa-times-circle"></i></a>
+    <div v-else class="unchecked" >
+
+      <transition name="bounce" mode="out-in">
+        <div v-if="!isUpdating">
+          <input class="checkbox"
+                 type="checkbox"
+                 @click="taskObj.is_finished = !taskObj.is_finished,
+                 updateTask()">
+
+          <span class="task-name"
+              @click="toggleIsUpdating">
+            {{taskObj.task_name}}
+          </span>
+
+          <span v-if="deadlineTimeHHMM!=='00:00'"
+              @click="toggleIsUpdating"
+              class="task-item-time">
+            {{deadlineTimeHHMM}}
+          </span>
+
+          <div class="delete-button">
+            <a href="#" @click.prevent="deleteTask()"><i class="far fa-times-circle"></i></a>
+          </div>
         </div>
-      </div>
 
-      <div v-else style="display: block;
-        border-top: 1px solid gray;
-        border-bottom: 1px solid gray;
-        border-radius: 3px;
-        padding: 10px 0 10px 0;
-        width: 100%">
-        <input
-               v-model="taskObj.task_name"
-               type="text"
-               placeholder="Название таска"
-               style="width: 85%; margin-left: 1.4em; margin-bottom: 0; font-size: 20px">
-        <textarea
-            v-model="taskObj.task_description"
-            placeholder="Описание таска"
-            style="resize: none; margin-left: 1.4em; width: 85%;font-size: 20px">
-        </textarea>
-        <input
-            v-model="newDeadlineTime"
-            type="time"
-            placeholder="чч:мм"
-            style="
-              float: right;
-              margin-left: 0;
-              margin-right: 10%;
-              margin-bottom: 0;
-              font-size: 20px;
-              ">
-        <a style="display: block;
-                margin-left: 1em;
-                margin-bottom: .1em;
-                font-size: 25px;
-                height: 30px;
-                width: 30px;"
-           @click="updateTask()">
-          <i class="far fa-check-square"></i>
-        </a>
-      </div>
+        <div v-else-if="$route.path!=='/archive'" class="task-update-form" >
+          <input class="task-name-input"
+                 v-model="taskObj.task_name"
+                 type="text"
+                 placeholder="Название таска">
 
+          <textarea class="task-desc-textarea"
+              v-model="taskObj.task_description"
+              placeholder="Описание таска">
+          </textarea>
+          <input class="time-input"
+              v-model="newDeadlineTime"
+              type="time"
+              placeholder="чч:мм">
+          <a class="accept-task-changes"
+             @click="updateTask()">
+            <i class="far fa-check-square"></i>
+          </a>
+        </div>
+      </transition>
     </div>
 
   </div>
@@ -100,7 +95,10 @@ export default {
     // Удаление таска
     deleteTask(){
       axios.delete(`http://localhost:8081/api/tasks/${this.task.id}`)
-          .then(() => this.$store.dispatch('refreshTasklist'))
+          .then(() => {
+            this.$store.dispatch('refreshTasklist')
+            this.$store.dispatch('refreshFinishedTasklist')
+          });
     },
 
     // Изменение таска
@@ -149,26 +147,7 @@ export default {
 
   //display: grid;
   //grid-template-columns:0.1fr 6fr 1fr;
-  .task-item-text{
-    font-size: 22px;
-    margin: 3px;
-    //font-family: 'Karla', sans-serif;
-    font-family: 'Exo 2', sans-serif;
-    font-weight: 400;
-  }
-  .task-item-text:hover{
-    cursor: pointer;
-  }
-  .task-item-time{
-    font-size: 22px;
-    margin: 0px;
-    color: orangered;
-    border: 1px solid gray;
-    border-radius: 5px;
-    padding: 0px 1px;
-    //font-family: 'Karla', sans-serif;
-    font-weight: 1000;
-  }
+
 
   .checked{
     display: inline;
@@ -180,7 +159,94 @@ export default {
   }
   .unchecked{
     display: inline;
+    .checkbox{
 
+    }
+    .task-name{
+      display: inline-block;
+      width: 80%;
+      min-width: 5%;
+      font-size: 22px;
+      margin-left: .5em;
+      font-weight: 400;
+      overflow-style: marquee-line;
+    }
+    .task-name:hover{
+      cursor: pointer;
+    }
+    .task-item-time{
+      font-size: 20px;
+      margin: 0px;
+      color: orangered;
+      border: 1px solid gray;
+      border-radius: 5px;
+      padding: 0px 1px;
+      font-weight: 1000;
+    }
+    .delete-button{
+      display: inline-block;
+      float: right;
+      margin-right: .5em;
+      margin-top: .3em;
+      overflow-style: marquee-block;
+      a{
+        margin-left: 3px;
+        color: red;
+        font-size: 16px;
+      }
+    }
+    .task-update-form{
+      display: block;
+      //border-top: 1px solid gray;
+      //border-bottom: 1px solid gray;
+      border-radius: 3px;
+      padding: 10px 0 10px 0;
+      width: 100%;
+      .task-name-input{
+        width: 85%;
+        padding: 5px;
+        margin-left: 1.4em;
+        margin-bottom: 0;
+        border: 0.5px solid gray;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+
+        border-bottom: #6E7091;
+        font-size: 18px;
+      }
+      .task-desc-textarea{
+        resize: none;
+        padding: 5px;
+        margin-left: 1.4em;
+        width: 85%;
+        font-size: 18px;
+        border: 0.5px solid gray;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+      .time-input{
+        float: right;
+        color: orangered;
+        margin-left: 0;
+        margin-right: 11%;
+        margin-bottom: 0;
+        font-size: 18px;
+      }
+      .accept-task-changes{
+        cursor: pointer;
+        display: block;
+        margin-left: 1em;
+        margin-bottom: .1em;
+        font-size: 25px;
+        height: 30px;
+        width: 30px;
+        color: #ABADDD;
+      }
+      .accept-task-changes:hover{
+        border-radius: 5px;
+        background: rgba(81, 120, 72, 0.1);
+      }
+    }
   }
   input{
     margin: 3px 2px;
@@ -189,24 +255,37 @@ export default {
   .delete-button{
     display: inline-block;
     float: right;
-    margin: .3em;
+    margin-right: .5em;
+    margin-top: .3em;
+    overflow-style: marquee-block;
     a{
-      float: inside;
-      font-size: 1em;
-      width: 40px;
-      padding: .1em .3em;
-      //background-color: transparent;
-      //border: 1px solid red;
-      border-radius: .4em;
-      /*margin-right: .5em;*/
-      text-decoration: none;
-      color: darkred;
-      margin-right: 5px;
-    }
-    a:hover{
-      background: rgba(255, 0, 0, 0.3);
+      margin-left: 3px;
+      color: red;
+      font-size: 16px;
     }
   }
+
+  //.delete-button{
+  //  display: inline-block;
+  //  float: right;
+  //  margin: .3em;
+  //  a{
+  //    float: inside;
+  //    font-size: 1em;
+  //    width: 40px;
+  //    padding: .1em .3em;
+  //    //background-color: transparent;
+  //    //border: 1px solid red;
+  //    border-radius: .4em;
+  //    /*margin-right: .5em;*/
+  //    text-decoration: none;
+  //    color: darkred;
+  //    margin-right: 5px;
+  //  }
+  //  a:hover{
+  //    background: rgba(255, 0, 0, 0.3);
+  //  }
+  //}
 
 }
 
@@ -215,5 +294,23 @@ export default {
   border-radius: 5px;
 }
 
+// Animations
 
+.bounce-enter-active {
+  animation: bounce-in .4s;
+}
+.bounce-leave-active {
+  animation: bounce-in .4s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 </style>

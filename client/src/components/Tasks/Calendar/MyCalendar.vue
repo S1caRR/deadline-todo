@@ -5,17 +5,20 @@
       <div v-else></div>
     </template>
   </DatePicker>
+</div>
 </template>
 
 <script>
 import { Calendar, DatePicker } from 'v-calendar';
 import TasklistDay from '../List/TasklistDay'
+import TaskList from "../List/TaskList";
+import Task from "../List/Task";
 export default {
   components: {DatePicker, Calendar, TasklistDay},
   data() {
     return {
       localeDate: [],
-      date: new Date(),
+      date: Date(),
       deadlineList: [],
       dateISONoTime: '',
       attrs: [
@@ -97,6 +100,51 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 
+
+.task-item{
+
+  //.unchecked{
+  //  .task-name{
+  //    display: inline-block;
+  //    width: 10%;
+  //  }
+  //  .task-update-form{
+  //    .inputForm{
+  //      .task-name-input{
+  //
+  //      }
+  //      .task-desc-textarea{
+  //
+  //      }
+  //    }
+  //  }
+  //}
+}
+
+
+//.tasklist-day{
+//  .task-list{
+//    .task-item{
+//      .unchecked{
+//        .task-name{
+//          color: red !important;
+//          font-size: 20px;
+//        }
+//        .task-update-form{
+//          .inputForm{
+//            .task-name-input{
+//              width: 200px;
+//            }
+//            .task-desc-textarea{
+//              width: 200px !important;
+//            }
+//          }
+//        }
+//      }
+//    }
+//
+//  }
+//}
 </style>

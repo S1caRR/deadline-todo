@@ -6,6 +6,7 @@ import Today from "../components/Tasks/Today/Today";
 import TasklistMain from "../components/Tasks/List/TasklistMain";
 import Archive from "../components/Tasks/Archive/Archive";
 import Profile from "../components/Profile/Profile";
+import Expired from "../components/Tasks/Expired/Expired";
 
 const routes = [
     {
@@ -30,7 +31,8 @@ const routes = [
         component: Profile
     },
     {
-        path: '/expired'
+        path: '/expired',
+        component: Expired
     }
 ]
 

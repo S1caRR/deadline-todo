@@ -1,4 +1,5 @@
 <template>
+  <div class="tasklist-day">
   <div class="date-now-container">
 
 <!--    DayHeader-->
@@ -17,63 +18,30 @@
         <i class="far fa-plus-square"></i>
       </a>
 
-      <transition name="fade">
-        <div v-if="isCreatingTask"
-             style="display:block;
-             margin-top: 1em;
-             padding-top: 1em;
-             border-top: 1px solid gray;
-             border-radius: 10px;
-             width: auto;
-             ">
-
-          <input
-              v-model="newTaskTitle"
-              type="text"
-              placeholder="Название таска"
-              style="
-                width: 85%;
-                margin-left: 1.4em;
-                margin-bottom: 0;
-                font-size: 20px">
-          <textarea
-              v-model="newTaskBody"
-              placeholder="Описание таска"
-              style="resize: none;
-                margin-left: 1.4em;
-                margin-bottom: 0;
-                width: 85%;
-                height: 50px;
-                font-size: 20px;
-                margin-top: 0;">
+      <transition name="dropdown">
+        <div class="task-input-form" v-if="isCreatingTask">
+          <input class="task-name-input"
+                 v-model="newTaskTitle"
+                 type="text"
+                 placeholder="Название таска">
+          <textarea class="task-desc-textarea"
+                    v-model="newTaskBody"
+                    placeholder="Описание таска">
           </textarea>
-          <input
-              v-model="newTaskTime"
-              type="time"
-              placeholder="чч:мм"
-              style="
-              color: rebeccapurple;
-              color-adjust: exact;
-                float: right;
-                margin-left: 0;
-                margin-right: 10%;
-                margin-bottom: 0;
-                font-size: 20px;
-                ">
+          <input class="time-input"
+                 v-model="newTaskTime"
+                 type="time"
+                 placeholder="чч:мм">
 
-          <a style="display: block;
-                  margin-left: 1em;
-                  margin-bottom: .1em;
-                  font-size: 25px;
-                  height: 30px;
-                  width: 30px;"
-                  @click="addTask()">
+          <a class="accept-task-changes"
+             @click="addTask()">
             <i class="far fa-check-square"></i>
           </a>
         </div>
       </transition>
     </div>
 
+  </div>
   </div>
 </template>
 
@@ -170,7 +138,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300&family=Karla:wght@300&family=Readex+Pro:wght@300&family=Tinos&display=swap');
 .date-now-container{
   //border-bottom: 2px solid teal;
   //border: 1px solid teal;
@@ -182,10 +149,6 @@ export default {
 
 }
 .date-now-header{
-
-  /*font-family: 'Readex Pro', sans-serif;*/
-  //font-family: 'Karla', sans-serif;
-  font-family: 'Exo 2', sans-serif;
   font-weight: 400;
   font-size: 19px;
   color: gray;
@@ -217,21 +180,76 @@ a:hover{
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+.fade-enter, .fade-leave-to {
   opacity: 0;
 }
-//input {
-//  margin: 5px;
-//  height: 40px;
-//  padding: 1px 10px;
-//  border-radius: 5px;
-//  font-family: 'Exo 2', sans-serif;
-//  font-weight: 400;
-//}
-//
-//input[type="text"] {
-//  font-size: 20px;
-//}
 
+.slide-enter, .slide-leave-to{
+  transform: scaleY(0);
+}
 
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.5s;
+}
+.dropdown-enter{
+  transform: translateY(30px);
+}
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+
+.task-input-form{
+  display: block;
+  //border-top: 1px solid gray;
+  //border-bottom: 1px solid gray;
+  border-radius: 3px;
+  padding: 10px 0 10px 0;
+  width: 100%;
+  .task-name-input{
+    width: 90%;
+    padding: 5px;
+    margin-left: 1.4em;
+    margin-bottom: 0;
+    border: 0.5px solid gray;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+
+    border-bottom: #6E7091;
+    font-size: 18px;
+  }
+  .task-desc-textarea{
+    resize: none;
+    padding: 5px;
+    margin-left: 1.4em;
+    width: 90%;
+    font-size: 18px;
+    border: 0.5px solid gray;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  .time-input{
+    float: right;
+    color: orangered;
+    margin-left: 0;
+    margin-right: 3em;
+    margin-bottom: 0;
+    font-size: 18px;
+  }
+  .accept-task-changes{
+    cursor: pointer;
+    display: block;
+    margin-left: 1em;
+    margin-bottom: .1em;
+    font-size: 25px;
+    height: 30px;
+    width: 30px;
+    color: #ABADDD;
+  }
+  .accept-task-changes:hover{
+    border-radius: 5px;
+    background: rgba(81, 120, 72, 0.1);
+  }
+}
 </style>
