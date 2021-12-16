@@ -1,7 +1,7 @@
 <template>
   <div class="content-header">
     <div class="content-header-block-date">
-      <h2>Today</h2>
+      <h2>Сегодня</h2>
     </div>
   </div>
 

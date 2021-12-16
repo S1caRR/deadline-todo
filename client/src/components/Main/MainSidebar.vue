@@ -25,27 +25,25 @@ export default {
   name: "MainSidebar",
   data(){
     return{
-      todayCount: 0,
-      upcomingCount: 0,
-      archiveCount: 0
+      // todayCount: 0,
+      // upcomingCount: 0,
+      // archiveCount: 0
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-#sidebar{
-  margin-left: 50%;
+#sidebar {
+  position: sticky;
+  top: 20px;
+  margin: 0 40px 0 35%;
+  border: 2px solid #90A5E6;
+  border-radius: 12px;
+  max-height: 175px
 }
 .core-block {
-  height: 130px;
-  //background-color: rgb(191 191 191);
-  border: 2px solid #90A5E6;
-  min-font-size: 5px;
-  //font-size: 40px;
-  border-radius: 7px;
-  position: sticky;
-  top: 10px;
+  display: flex;
   z-index: 0;
   background: linear-gradient(to right top,  #90A5E6, #ABADDD);
   //height: 90%;
@@ -62,7 +60,7 @@ export default {
 
   //margin-left: 40px;
   margin-right: 5px;
-
+  color: black;
     a{
       margin-top: .3em;
       color: white;
