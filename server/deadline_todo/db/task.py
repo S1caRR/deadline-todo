@@ -27,7 +27,7 @@ class TaskDatabaseService:
             stmt = (
                 select(Task)
                 .where(Task.user_id == user_id)
-                .order_by(Task.deadline)
+                .order_by(Task.deadline, Task.id)
             )
             if is_finished is not None:
                 stmt = stmt.where(Task.is_finished == is_finished)
